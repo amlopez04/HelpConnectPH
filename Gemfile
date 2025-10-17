@@ -67,7 +67,7 @@ group :development, :test do
   gem "dotenv-rails"
   
   # RSpec for testing
-  gem "rspec-rails", "~> 6.1.0"
+  gem "rspec-rails", "~> 8.0.2"
   gem "factory_bot_rails"  # Test data factories
   gem "faker"              # Generate fake data for tests
 end
