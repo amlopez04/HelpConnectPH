@@ -1,14 +1,37 @@
-<div class="container mx-auto px-4 py-16">
-  <div class="text-center">
-    <h1 class="text-4xl font-bold text-gray-900 mb-4">
-      Welcome to HelpConnect PH
-    </h1>
-    <p class="text-xl text-gray-600 mb-8">
-      Barangay Help Connect System
-    </p>
-    <p class="text-gray-500">
-      Connecting communities to the local government
-    </p>
+<!-- Navigation -->
+<nav>
+  <div>
+    <h2>HelpConnect PH</h2>
+    
+    <% if user_signed_in? %>
+      <p>Logged in as: <%= current_user.email %></p>
+      <%= button_to "Log Out", destroy_user_session_path, method: :delete %>
+    <% else %>
+      <%= link_to "Sign Up", new_user_registration_path %>
+      <%= link_to "Log In", new_user_session_path %>
+    <% end %>
   </div>
-</div>
+</nav>
 
+<hr>
+
+<div>
+  <h1>Welcome to HelpConnect PH</h1>
+  <p>Barangay Help Connect System</p>
+  <p>Connecting communities to the local government</p>
+  
+  <% if user_signed_in? %>
+    <div>
+      <p><strong>✓ You are logged in as <%= current_user.email %></strong></p>
+      <% if current_user.confirmed? %>
+        <p>Email confirmed ✓</p>
+      <% else %>
+        <p>⚠ Please check your email to confirm your account</p>
+      <% end %>
+    </div>
+  <% else %>
+    <div>
+      <p>Please log in or sign up to access the system</p>
+    </div>
+  <% end %>
+</div>
