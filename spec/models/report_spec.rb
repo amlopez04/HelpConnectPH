@@ -153,5 +153,32 @@ RSpec.describe Report, type: :model do
       expect(report.resolved_at).to be_nil
     end
   end
+
+  describe "photo attachments" do
+    it "can have many photos attached" do
+      report = create(:report)
+      expect(report.photos).to respond_to(:attach)
+      expect(report.photos).to respond_to(:attached?)
+    end
+
+    it "can attach multiple photos" do
+      report = create(:report)
+      # Simulate attaching photos using Active Storage
+      report.photos.attach(
+        io: StringIO.new("fake image content"),
+        filename: "test1.jpg",
+        content_type: "image/jpeg"
+      )
+      report.photos.attach(
+        io: StringIO.new("fake image content 2"),
+        filename: "test2.jpg",
+        content_type: "image/jpeg"
+      )
+      
+      expect(report.photos.count).to eq(2)
+      expect(report.photos.first.filename.to_s).to eq("test1.jpg")
+      expect(report.photos.second.filename.to_s).to eq("test2.jpg")
+    end
+  end
 end
 

@@ -3,6 +3,10 @@ class Report < ApplicationRecord
   belongs_to :user
   belongs_to :barangay
   belongs_to :category
+  has_many :comments, dependent: :destroy
+  
+  # Active Storage - Photo attachments
+  has_many_attached :photos
   
   # Validations
   validates :title, presence: true

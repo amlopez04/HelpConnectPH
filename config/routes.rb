@@ -16,4 +16,43 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+  
+  # ============================================
+  # REPORTS (All CRUD operations)
+  # ============================================
+  get    '/reports',          to: 'reports#index',   as: 'reports'
+  get    '/reports/new',      to: 'reports#new',     as: 'new_report'
+  post   '/reports',          to: 'reports#create'
+  get    '/reports/:id',      to: 'reports#show',    as: 'report'
+  get    '/reports/:id/edit', to: 'reports#edit',    as: 'edit_report'
+  patch  '/reports/:id',      to: 'reports#update'
+  delete '/reports/:id',      to: 'reports#destroy'
+  
+  # ============================================
+  # COMMENTS (Nested under reports)
+  # ============================================
+  post   '/reports/:report_id/comments',     to: 'comments#create',  as: 'report_comments'
+  delete '/reports/:report_id/comments/:id', to: 'comments#destroy', as: 'report_comment'
+  
+  # ============================================
+  # CATEGORIES (Admin only - Full CRUD)
+  # ============================================
+  get    '/categories',          to: 'categories#index',   as: 'categories'
+  get    '/categories/new',      to: 'categories#new',     as: 'new_category'
+  post   '/categories',          to: 'categories#create'
+  get    '/categories/:id',      to: 'categories#show',    as: 'category'
+  get    '/categories/:id/edit', to: 'categories#edit',    as: 'edit_category'
+  patch  '/categories/:id',      to: 'categories#update'
+  delete '/categories/:id',      to: 'categories#destroy'
+  
+  # ============================================
+  # BARANGAYS (Admin only - Full CRUD)
+  # ============================================
+  get    '/barangays',          to: 'barangays#index',   as: 'barangays'
+  get    '/barangays/new',      to: 'barangays#new',     as: 'new_barangay'
+  post   '/barangays',          to: 'barangays#create'
+  get    '/barangays/:id',      to: 'barangays#show',    as: 'barangay'
+  get    '/barangays/:id/edit', to: 'barangays#edit',    as: 'edit_barangay'
+  patch  '/barangays/:id',      to: 'barangays#update'
+  delete '/barangays/:id',      to: 'barangays#destroy'
 end

@@ -7,6 +7,7 @@ class User < ApplicationRecord
   # Associations
   belongs_to :barangay, optional: true
   has_many :reports, dependent: :destroy
+  has_many :comments, dependent: :destroy
   
   # User roles
   enum :role, { resident: 0, barangay_official: 1, admin: 2 }, default: :resident
