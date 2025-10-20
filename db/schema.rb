@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_17_172939) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_20_115954) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -34,6 +34,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_17_172939) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "reports", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.integer "status"
+    t.integer "priority"
+    t.string "address"
+    t.decimal "latitude"
+    t.decimal "longitude"
+    t.bigint "user_id", null: false
+    t.bigint "barangay_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["barangay_id"], name: "index_reports_on_barangay_id"
+    t.index ["category_id"], name: "index_reports_on_category_id"
+    t.index ["user_id"], name: "index_reports_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -55,5 +74,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_17_172939) do
     t.index ["role"], name: "index_users_on_role"
   end
 
+  add_foreign_key "reports", "barangays"
+  add_foreign_key "reports", "categories"
+  add_foreign_key "reports", "users"
   add_foreign_key "users", "barangays"
 end
