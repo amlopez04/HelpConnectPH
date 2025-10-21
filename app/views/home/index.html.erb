@@ -1,37 +1,70 @@
-<!-- Navigation -->
-<nav>
-  <div>
-    <h2>HelpConnect PH</h2>
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-xl p-8 md:p-16 mb-12">
+  <div class="text-center">
+    <h1 class="text-4xl md:text-6xl font-bold mb-4">ParañaqueConnect</h1>
+    <p class="text-xl md:text-2xl mb-2">Connecting Parañaque Communities with their Barangay Officials</p>
+    <p class="text-lg opacity-90 mb-8">Report issues, track progress, and build a better Parañaque City together</p>
     
-    <% if user_signed_in? %>
-      <p>Logged in as: <%= current_user.email %></p>
-      <%= button_to "Log Out", destroy_user_session_path, method: :delete %>
-    <% else %>
-      <%= link_to "Sign Up", new_user_registration_path %>
-      <%= link_to "Log In", new_user_session_path %>
-    <% end %>
-  </div>
-</nav>
-
-<hr>
-
-<div>
-  <h1>Welcome to HelpConnect PH</h1>
-  <p>Barangay Help Connect System</p>
-  <p>Connecting communities to the local government</p>
-  
-  <% if user_signed_in? %>
-    <div>
-      <p><strong>✓ You are logged in as <%= current_user.email %></strong></p>
-      <% if current_user.confirmed? %>
-        <p>Email confirmed ✓</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <% if user_signed_in? %>
+        <%= link_to "Go to Dashboard", dashboard_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" %>
+        <%= link_to "View Reports", reports_path, class: "bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition border-2 border-white" %>
       <% else %>
-        <p>⚠ Please check your email to confirm your account</p>
+        <%= link_to "Get Started", new_user_registration_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" %>
+        <%= link_to "Learn More", "#features", class: "bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition border-2 border-white" %>
       <% end %>
     </div>
-  <% else %>
-    <div>
-      <p>Please log in or sign up to access the system</p>
-    </div>
-  <% end %>
+  </div>
 </div>
+
+<!-- Features Section -->
+<div id="features" class="grid md:grid-cols-3 gap-8 mb-12">
+  <!-- Feature 1 -->
+  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+    <div class="text-4xl mb-4">📝</div>
+    <h3 class="text-xl font-bold mb-2">Report Issues</h3>
+    <p class="text-gray-600">Residents can easily report community issues like flooding, road damage, and more with photos and location.</p>
+  </div>
+  
+  <!-- Feature 2 -->
+  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+    <div class="text-4xl mb-4">👔</div>
+    <h3 class="text-xl font-bold mb-2">Track Progress</h3>
+    <p class="text-gray-600">Barangay officials can manage reports, update status, and communicate directly with residents.</p>
+  </div>
+  
+  <!-- Feature 3 -->
+  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+    <div class="text-4xl mb-4">📊</div>
+    <h3 class="text-xl font-bold mb-2">View Statistics</h3>
+    <p class="text-gray-600">Transparent community updates with real-time statistics and progress tracking for all reports.</p>
+  </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-white rounded-lg shadow-md p-8 mb-12">
+  <h2 class="text-2xl font-bold text-center mb-8">Community Impact</h2>
+  <div class="grid md:grid-cols-3 gap-8 text-center">
+    <div>
+      <div class="text-4xl font-bold text-blue-600 mb-2"><%= Report.count %></div>
+      <div class="text-gray-600">Total Reports</div>
+    </div>
+    <div>
+      <div class="text-4xl font-bold text-green-600 mb-2"><%= Report.resolved.count rescue 0 %></div>
+      <div class="text-gray-600">Resolved Issues</div>
+    </div>
+    <div>
+      <div class="text-4xl font-bold text-purple-600 mb-2"><%= Barangay.count %></div>
+      <div class="text-gray-600">Barangays Served</div>
+    </div>
+  </div>
+</div>
+
+<!-- Call to Action -->
+<% unless user_signed_in? %>
+  <div class="bg-blue-50 rounded-lg p-8 text-center">
+    <h2 class="text-2xl font-bold mb-4">Ready to Get Started?</h2>
+    <p class="text-gray-600 mb-6">Join ParañaqueConnect and be part of building a better community.</p>
+    <%= link_to "Create Account", new_user_registration_path, class: "inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+  </div>
+<% end %>

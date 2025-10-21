@@ -1,0 +1,17 @@
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center mb-4">
+    <%= link_to categories_path, class: "text-blue-600 hover:text-blue-800" do %>
+      ← Back to Categories
+    <% end %>
+  </div>
+  
+  <h1 class="text-3xl font-bold text-gray-900">Create New Category</h1>
+  <p class="text-gray-600 mt-2">Add a new category for community reports.</p>
+</div>
+
+<!-- Form -->
+<div class="bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <%= render "form", category: @category %>
+</div>
+

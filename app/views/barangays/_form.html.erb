@@ -1,0 +1,73 @@
+<%= form_with(model: barangay, local: true, class: "space-y-6") do |form| %>
+  <% if barangay.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <h3 class="text-red-800 font-semibold mb-2">
+        <%= pluralize(barangay.errors.count, "error") %> prohibited this barangay from being saved:
+      </h3>
+      <ul class="list-disc list-inside text-red-700 text-sm">
+        <% barangay.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= form.text_field :name, 
+        class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+        placeholder: "e.g., Barangay San Dionisio" %>
+    <p class="text-sm text-gray-500 mt-1">Official name of the barangay</p>
+  </div>
+
+  <div>
+    <%= form.label :description, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= form.text_area :description, 
+        rows: 4,
+        class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+        placeholder: "Brief description of the barangay..." %>
+    <p class="text-sm text-gray-500 mt-1">Optional: Additional information about the barangay</p>
+  </div>
+
+  <div>
+    <%= form.label :address, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= form.text_area :address, 
+        rows: 2,
+        class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+        placeholder: "Complete address (will be used for geocoding)" %>
+    <p class="text-sm text-gray-500 mt-1">Full address including Parañaque City for accurate mapping</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :contact_number, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= form.text_field :contact_number, 
+          class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+          placeholder: "e.g., (02) 8123-4567" %>
+      <p class="text-sm text-gray-500 mt-1">Optional: Barangay hotline number</p>
+    </div>
+
+    <div>
+      <%= form.label :contact_email, class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= form.email_field :contact_email, 
+          class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+          placeholder: "e.g., barangay@example.com" %>
+      <p class="text-sm text-gray-500 mt-1">Optional: Barangay email address</p>
+    </div>
+  </div>
+
+  <% if barangay.persisted? && barangay.latitude.present? && barangay.longitude.present? %>
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+      <p class="text-green-800 font-semibold mb-1">📍 Location Geocoded</p>
+      <p class="text-green-700 text-sm">
+        Coordinates: <%= barangay.latitude.round(6) %>, <%= barangay.longitude.round(6) %>
+      </p>
+    </div>
+  <% end %>
+
+  <div class="flex gap-4 pt-4">
+    <%= form.submit class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
+    <%= link_to "Cancel", barangays_path, class: "bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition" %>
+  </div>
+<% end %>
+

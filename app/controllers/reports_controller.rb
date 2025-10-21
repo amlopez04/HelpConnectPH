@@ -1,12 +1,22 @@
 class ReportsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+  before_action :authenticate_user!
   before_action :set_report, only: [:show, :edit, :update, :destroy]
   
   def index
-    @reports = Report.all.includes(:user, :barangay, :category).order(created_at: :desc)
+    # Use Pundit policy scope to filter reports based on user role
+    @reports = policy_scope(Report).includes(:user, :barangay, :category)
+    
+    # Filter by status if provided
+    if params[:status].present?
+      @reports = @reports.where(status: params[:status])
+    end
+    
+    @reports = @reports.order(created_at: :desc)
   end
   
   def show
+    authorize @report
+    @report.comments.reload # Ensure comments are loaded
   end
   
   def new

@@ -1,12 +1,14 @@
 class BarangaysController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+  before_action :authenticate_user!
   before_action :set_barangay, only: [:show, :edit, :update, :destroy]
   
   def index
+    authorize Barangay
     @barangays = Barangay.all
   end
   
   def show
+    authorize @barangay
     @reports = @barangay.reports.includes(:user, :category).order(created_at: :desc)
   end
   
