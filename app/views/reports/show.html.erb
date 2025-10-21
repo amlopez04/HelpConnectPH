@@ -1,0 +1,130 @@
+<!-- Back Button -->
+<div class="mb-4">
+  <%= link_to reports_path, class: "text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center" do %>
+    ← Back to Reports
+  <% end %>
+</div>
+
+<!-- Report Card -->
+<div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white">
+    <h1 class="text-3xl font-bold mb-2"><%= @report.title %></h1>
+    <div class="flex items-center text-blue-100">
+      <span>Reported by <%= @report.user.email %></span>
+      <span class="mx-2">•</span>
+      <span><%= @report.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="p-8">
+    <!-- Status & Priority Badges -->
+    <div class="flex flex-wrap gap-3 mb-6">
+      <span class="<%= @report.pending? ? 'bg-yellow-100 text-yellow-800' : @report.in_progress? ? 'bg-orange-100 text-orange-800' : @report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-4 py-2 rounded-full text-sm font-semibold">
+        <%= @report.status.titleize %>
+      </span>
+      <span class="<%= @report.critical? ? 'bg-red-100 text-red-800' : @report.high? ? 'bg-orange-100 text-orange-800' : @report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-4 py-2 rounded-full text-sm font-semibold">
+        <%= @report.priority.titleize %> Priority
+      </span>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-3">Description</h2>
+      <p class="text-gray-700 leading-relaxed whitespace-pre-line"><%= @report.description %></p>
+    </div>
+
+    <!-- Location & Details -->
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <h3 class="text-sm font-semibold text-gray-600 mb-2">📍 Location</h3>
+        <p class="text-gray-900"><%= @report.address %></p>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-gray-600 mb-2">🏘️ Barangay</h3>
+        <p class="text-gray-900"><%= @report.barangay.name %></p>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-gray-600 mb-2">🏷️ Category</h3>
+        <p class="text-gray-900"><%= @report.category.name %></p>
+      </div>
+      <% if @report.resolved_at.present? %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-600 mb-2">✅ Resolved Date</h3>
+          <p class="text-gray-900"><%= @report.resolved_at.strftime("%B %d, %Y") %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Photos -->
+    <% if @report.photos.attached? %>
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-3">📷 Photos (<%= @report.photos.count %>)</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <% @report.photos.each do |photo| %>
+            <%= image_tag photo, class: "w-full h-48 object-cover rounded-lg shadow-md hover:shadow-xl transition cursor-pointer" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Actions -->
+    <% if policy(@report).update? || policy(@report).destroy? %>
+      <div class="flex gap-4 pt-6 border-t">
+        <% if policy(@report).update? %>
+          <%= link_to edit_report_path(@report), class: "bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" do %>
+            ✏️ Edit Report
+          <% end %>
+        <% end %>
+        <% if policy(@report).destroy? %>
+          <%= button_to report_path(@report), method: :delete, data: { turbo: false, confirm: "Are you sure you want to delete this report?" }, class: "bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition" do %>
+            🗑️ Delete Report
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Comments Section -->
+<div class="bg-white rounded-lg shadow-lg p-8">
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Comments (<%= @report.comments.count %>)</h2>
+
+  <!-- Add Comment Form -->
+  <% if user_signed_in? %>
+    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+      <%= form_with(model: [@report, Comment.new], data: { turbo: false }) do |f| %>
+        <div class="mb-4">
+          <%= f.text_area :content, rows: 4, placeholder: "Add a comment...", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        </div>
+        <%= f.submit "Post Comment", class: "bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Comments List -->
+  <% if @report.comments.any? %>
+    <div class="space-y-4">
+      <% @report.comments.each do |comment| %>
+        <div class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="font-semibold text-gray-900"><%= comment.user.email %></span>
+              <span class="text-sm text-gray-500 ml-2"><%= time_ago_in_words(comment.created_at) %> ago</span>
+            </div>
+            <% if policy(comment).destroy? %>
+              <%= button_to report_comment_path(@report, comment), method: :delete, data: { turbo: false, confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800 text-sm" do %>
+                🗑️ Delete
+              <% end %>
+            <% end %>
+          </div>
+          <p class="text-gray-700 whitespace-pre-line"><%= comment.content %></p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 py-8">No comments yet. Be the first to comment!</p>
+  <% end %>
+</div>
+

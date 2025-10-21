@@ -6,11 +6,21 @@ class BarangayPolicy < ApplicationPolicy
   end
   
   def index?
-    true # Anyone can view barangays
+    # Only admins and residents can browse all barangays
+    # Barangay officials should focus on their own barangay only
+    user&.admin? || user&.resident?
   end
   
   def show?
-    true # Anyone can view a barangay
+    # Admins and residents can view any barangay
+    return true if user&.admin? || user&.resident?
+    
+    # Barangay officials can only view their own barangay
+    if user&.barangay_official? && user.barangay.present?
+      record.id == user.barangay_id
+    else
+      false
+    end
   end
   
   def create?

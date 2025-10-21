@@ -1,0 +1,89 @@
+<!-- Header -->
+<div class="mb-6 flex justify-between items-center">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Community Reports</h1>
+    <p class="text-gray-600 mt-2">View and track community issues reported by residents.</p>
+  </div>
+  <% if user_signed_in? && !current_user.admin? %>
+    <%= link_to new_report_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
+      <span class="mr-2">➕</span> New Report
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6">
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "All", reports_path, class: "px-4 py-2 rounded-lg font-semibold #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Pending", reports_path(status: 'pending'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "In Progress", reports_path(status: 'in_progress'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'in_progress' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Resolved", reports_path(status: 'resolved'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'resolved' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+  </div>
+</div>
+
+<!-- Reports List -->
+<% if @reports.any? %>
+  <div class="grid gap-6">
+    <% @reports.each do |report| %>
+      <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
+        <div class="p-6">
+          <!-- Header -->
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2"><%= report.title %></h3>
+              <div class="flex items-center text-sm text-gray-500">
+                <span>Reported by <%= report.user.email %></span>
+                <span class="mx-2">•</span>
+                <span><%= time_ago_in_words(report.created_at) %> ago</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="text-gray-600 mb-4"><%= truncate(report.description, length: 200) %></p>
+
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+              <%= report.category.name %>
+            </span>
+            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
+              📍 <%= report.barangay.name %>
+            </span>
+            <span class="<%= report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">
+              <%= report.status.titleize %>
+            </span>
+            <span class="<%= report.critical? ? 'bg-red-100 text-red-800' : report.high? ? 'bg-orange-100 text-orange-800' : report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">
+              <%= report.priority.titleize %> Priority
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-between items-center pt-4 border-t">
+            <div class="text-sm text-gray-500">
+              <% if report.photos.attached? %>
+                <span>📷 <%= report.photos.count %> photo(s)</span>
+              <% end %>
+            </div>
+            <%= link_to "View Details →", report, class: "text-blue-600 hover:text-blue-800 font-semibold" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-gray-50 rounded-lg p-12 text-center">
+    <div class="text-6xl mb-4">📝</div>
+    <p class="text-gray-600 text-lg mb-4">
+      <% if params[:status].present? %>
+        No <%= params[:status].humanize %> reports found.
+      <% else %>
+        No reports yet.
+      <% end %>
+    </p>
+    <% if user_signed_in? && !current_user.admin? %>
+      <%= link_to "Create First Report", new_report_path, class: "inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+    <% end %>
+  </div>
+<% end %>
+

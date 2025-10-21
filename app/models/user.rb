@@ -11,4 +11,12 @@ class User < ApplicationRecord
   
   # User roles
   enum :role, { resident: 0, barangay_official: 1, admin: 2 }, default: :resident
+
+  # Validations
+  # Ensure only one barangay official (captain) per barangay
+  validates :barangay_id, uniqueness: { 
+    scope: :role, 
+    conditions: -> { where(role: :barangay_official) },
+    message: "already has a captain assigned" 
+  }, if: :barangay_official?
 end

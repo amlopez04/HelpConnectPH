@@ -1,0 +1,106 @@
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center mb-4">
+    <%= link_to categories_path, class: "text-blue-600 hover:text-blue-800 mr-4" do %>
+      ← Back to Categories
+    <% end %>
+  </div>
+  
+  <div class="flex justify-between items-start">
+    <div class="flex items-center">
+      <% if @category.icon.present? %>
+        <span class="text-6xl mr-4"><%= @category.icon %></span>
+      <% else %>
+        <span class="text-6xl mr-4">📋</span>
+      <% end %>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900"><%= @category.name %></h1>
+        <p class="text-gray-600 mt-2">
+          <% if @category.description.present? %>
+            <%= @category.description %>
+          <% else %>
+            <span class="italic">No description available</span>
+          <% end %>
+        </p>
+      </div>
+    </div>
+    
+    <% if policy(@category).edit? %>
+      <div class="flex gap-2">
+        <%= link_to edit_category_path(@category), class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition" do %>
+          ✏️ Edit
+        <% end %>
+        <% if policy(@category).destroy? %>
+          <%= button_to @category, method: :delete, 
+              data: { turbo_confirm: "Are you sure? This will affect #{@category.reports.count} #{'report'.pluralize(@category.reports.count)}." },
+              class: "bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition" do %>
+            🗑️ Delete
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Statistics -->
+<div class="grid md:grid-cols-4 gap-6 mb-6">
+  <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Total Reports</div>
+    <div class="text-4xl font-bold"><%= @category.reports.count %></div>
+  </div>
+  <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Pending</div>
+    <div class="text-4xl font-bold"><%= @category.reports.pending.count rescue 0 %></div>
+  </div>
+  <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">In Progress</div>
+    <div class="text-4xl font-bold"><%= @category.reports.in_progress.count rescue 0 %></div>
+  </div>
+  <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Resolved</div>
+    <div class="text-4xl font-bold"><%= @category.reports.resolved.count rescue 0 %></div>
+  </div>
+</div>
+
+<!-- Reports in this Category -->
+<div class="bg-white rounded-lg shadow-md p-6">
+  <h2 class="text-xl font-bold text-gray-900 mb-4">Reports in this Category</h2>
+  
+  <% if @category.reports.any? %>
+    <div class="space-y-4">
+      <% @category.reports.order(created_at: :desc).limit(10).each do |report| %>
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="font-bold text-gray-900"><%= report.title %></h3>
+            <span class="<%= report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-xs font-semibold">
+              <%= report.status.titleize %>
+            </span>
+          </div>
+          
+          <p class="text-gray-600 text-sm mb-3"><%= truncate(report.description, length: 150) %></p>
+          
+          <div class="flex justify-between items-center text-sm">
+            <div class="text-gray-500">
+              <span>📍 <%= report.barangay.name %></span>
+              <span class="mx-2">•</span>
+              <span><%= time_ago_in_words(report.created_at) %> ago</span>
+            </div>
+            <%= link_to "View →", report, class: "text-blue-600 hover:text-blue-800 font-semibold" %>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if @category.reports.count > 10 %>
+        <div class="text-center pt-4">
+          <%= link_to "View All #{@category.reports.count} Reports →", reports_path(category_id: @category.id), class: "text-blue-600 hover:text-blue-800 font-semibold" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="text-6xl mb-4">📝</div>
+      <p class="text-gray-600">No reports in this category yet.</p>
+    </div>
+  <% end %>
+</div>
+

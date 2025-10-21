@@ -17,6 +17,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
   
+ # Dashboard (role-based)
+  get '/dashboard', to: 'dashboards#show', as: 'dashboard'
+  
   # ============================================
   # REPORTS (All CRUD operations)
   # ============================================
@@ -55,4 +58,10 @@ Rails.application.routes.draw do
   get    '/barangays/:id/edit', to: 'barangays#edit',    as: 'edit_barangay'
   patch  '/barangays/:id',      to: 'barangays#update'
   delete '/barangays/:id',      to: 'barangays#destroy'
+
+  # ============================================
+  # ADMIN - BARANGAY CAPTAIN MANAGEMENT
+  # ============================================
+  get  '/admin/barangay_captains/new', to: 'admin/barangay_captains#new',    as: 'new_admin_barangay_captain'
+  post '/admin/barangay_captains',     to: 'admin/barangay_captains#create', as: 'admin_barangay_captains'
 end

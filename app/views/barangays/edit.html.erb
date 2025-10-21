@@ -1,0 +1,53 @@
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center mb-4">
+    <%= link_to barangays_path, class: "text-blue-600 hover:text-blue-800 mr-4" do %>
+      ← Back to Barangays
+    <% end %>
+    <span class="text-gray-400">|</span>
+    <%= link_to @barangay, class: "text-blue-600 hover:text-blue-800 ml-4" do %>
+      View Barangay
+    <% end %>
+  </div>
+  
+  <h1 class="text-3xl font-bold text-gray-900">Edit Barangay</h1>
+  <p class="text-gray-600 mt-2">Update <%= @barangay.name %> information.</p>
+</div>
+
+<!-- Form -->
+<div class="bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <%= render "form", barangay: @barangay %>
+  
+  <% if policy(@barangay).destroy? %>
+    <div class="mt-8 pt-8 border-t border-gray-200">
+      <h3 class="text-lg font-bold text-red-800 mb-2">Danger Zone</h3>
+      <p class="text-gray-600 text-sm mb-2">
+        Deleting this barangay will affect:
+      </p>
+      <ul class="list-disc list-inside text-gray-600 text-sm mb-4">
+        <li><%= @barangay.reports.count %> <%= 'report'.pluralize(@barangay.reports.count) %></li>
+        <li><%= @barangay.users.count %> <%= 'user'.pluralize(@barangay.users.count) %> (will be unassigned)</li>
+      </ul>
+      <%= button_to "Delete Barangay", @barangay, method: :delete,
+          data: { turbo_confirm: "Are you sure? This action cannot be undone." },
+          class: "bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition" %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Help Text -->
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mt-6">
+  <h3 class="text-blue-900 font-semibold mb-2">ℹ️ About Geocoding</h3>
+  <p class="text-blue-800 text-sm mb-2">
+    If you update the address, the system will automatically re-geocode the location to get new coordinates.
+  </p>
+  <p class="text-blue-800 text-sm">
+    Current coordinates: 
+    <% if @barangay.latitude.present? && @barangay.longitude.present? %>
+      <span class="font-semibold"><%= @barangay.latitude.round(6) %>, <%= @barangay.longitude.round(6) %></span>
+    <% else %>
+      <span class="italic">Not geocoded yet</span>
+    <% end %>
+  </p>
+</div>
+

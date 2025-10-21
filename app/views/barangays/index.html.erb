@@ -1,0 +1,103 @@
+<!-- Header -->
+<div class="mb-6 flex justify-between items-center">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Barangays</h1>
+    <p class="text-gray-600 mt-2">View all barangays in Parañaque City.</p>
+  </div>
+  <% if policy(Barangay).create? %>
+    <%= link_to new_barangay_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
+      <span class="mr-2">➕</span> New Barangay
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Statistics -->
+<div class="grid md:grid-cols-4 gap-6 mb-6">
+  <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Total Barangays</div>
+    <div class="text-4xl font-bold"><%= @barangays.count %></div>
+  </div>
+  <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Total Reports</div>
+    <div class="text-4xl font-bold"><%= Report.count rescue 0 %></div>
+  </div>
+  <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">With Captain</div>
+    <div class="text-4xl font-bold"><%= User.barangay_official.count rescue 0 %></div>
+  </div>
+  <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="text-sm opacity-90 mb-1">Active Issues</div>
+    <div class="text-4xl font-bold"><%= Report.where.not(status: :resolved).count rescue 0 %></div>
+  </div>
+</div>
+
+<!-- Barangays List -->
+<% if @barangays.any? %>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @barangays.each do |barangay| %>
+      <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
+        <div class="p-6">
+          <!-- Header -->
+          <div class="mb-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">🏘️ <%= barangay.name %></h3>
+            <% if barangay.address.present? %>
+              <p class="text-gray-600 text-sm">📍 <%= truncate(barangay.address, length: 60) %></p>
+            <% end %>
+          </div>
+
+          <!-- Description -->
+          <% if barangay.description.present? %>
+            <p class="text-gray-600 mb-4 text-sm"><%= truncate(barangay.description, length: 100) %></p>
+          <% end %>
+
+          <!-- Contact Info -->
+          <div class="bg-gray-50 rounded-lg p-3 mb-4 space-y-1">
+            <% if barangay.contact_number.present? %>
+              <p class="text-sm text-gray-700">
+                <span class="font-semibold">📞</span> <%= barangay.contact_number %>
+              </p>
+            <% end %>
+            <% if barangay.contact_email.present? %>
+              <p class="text-sm text-gray-700 break-all">
+                <span class="font-semibold">📧</span> <%= barangay.contact_email %>
+              </p>
+            <% end %>
+            <p class="text-sm text-gray-700">
+              <span class="font-semibold">📊</span> <%= barangay.reports.count %> <%= 'report'.pluralize(barangay.reports.count) %>
+            </p>
+          </div>
+
+          <!-- Captain Info -->
+          <% captain = barangay.users.barangay_official.first %>
+          <% if captain %>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p class="text-blue-800 font-semibold text-sm mb-1">👤 Barangay Captain</p>
+              <p class="text-blue-700 text-sm"><%= captain.email %></p>
+            </div>
+          <% else %>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+              <p class="text-yellow-800 text-sm">⚠️ No captain assigned</p>
+            </div>
+          <% end %>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <%= link_to "View", barangay, class: "flex-1 text-center bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-blue-200 transition" %>
+            <% if policy(barangay).edit? %>
+              <%= link_to "Edit", edit_barangay_path(barangay), class: "flex-1 text-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-gray-50 rounded-lg p-12 text-center">
+    <div class="text-6xl mb-4">🏘️</div>
+    <p class="text-gray-600 text-lg mb-4">No barangays yet.</p>
+    <% if policy(Barangay).create? %>
+      <%= link_to "Create First Barangay", new_barangay_path, class: "inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+    <% end %>
+  </div>
+<% end %>
+

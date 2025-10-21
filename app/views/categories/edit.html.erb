@@ -1,0 +1,40 @@
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center mb-4">
+    <%= link_to categories_path, class: "text-blue-600 hover:text-blue-800 mr-4" do %>
+      ← Back to Categories
+    <% end %>
+    <span class="text-gray-400">|</span>
+    <%= link_to @category, class: "text-blue-600 hover:text-blue-800 ml-4" do %>
+      View Category
+    <% end %>
+  </div>
+  
+  <div class="flex items-center">
+    <% if @category.icon.present? %>
+      <span class="text-5xl mr-4"><%= @category.icon %></span>
+    <% end %>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Edit Category</h1>
+      <p class="text-gray-600 mt-2">Update <%= @category.name %> category details.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Form -->
+<div class="bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <%= render "form", category: @category %>
+  
+  <% if policy(@category).destroy? %>
+    <div class="mt-8 pt-8 border-t border-gray-200">
+      <h3 class="text-lg font-bold text-red-800 mb-2">Danger Zone</h3>
+      <p class="text-gray-600 text-sm mb-4">
+        Deleting this category will affect <%= @category.reports.count %> <%= 'report'.pluralize(@category.reports.count) %>.
+      </p>
+      <%= button_to "Delete Category", @category, method: :delete,
+          data: { turbo_confirm: "Are you sure? This action cannot be undone." },
+          class: "bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition" %>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,28 @@
+<!-- Header -->
+<div class="mb-6">
+  <div class="flex items-center mb-4">
+    <%= link_to barangays_path, class: "text-blue-600 hover:text-blue-800" do %>
+      ← Back to Barangays
+    <% end %>
+  </div>
+  
+  <h1 class="text-3xl font-bold text-gray-900">Create New Barangay</h1>
+  <p class="text-gray-600 mt-2">Add a new barangay to the system.</p>
+</div>
+
+<!-- Form -->
+<div class="bg-white rounded-lg shadow-md p-6 max-w-2xl">
+  <%= render "form", barangay: @barangay %>
+</div>
+
+<!-- Help Text -->
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mt-6">
+  <h3 class="text-blue-900 font-semibold mb-2">ℹ️ About Geocoding</h3>
+  <p class="text-blue-800 text-sm mb-2">
+    When you save a barangay with an address, the system will automatically geocode the location to get coordinates.
+  </p>
+  <p class="text-blue-800 text-sm">
+    Make sure to provide a complete address including "Parañaque City" for accurate results.
+  </p>
+</div>
+

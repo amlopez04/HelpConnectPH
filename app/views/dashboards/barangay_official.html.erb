@@ -1,0 +1,92 @@
+<!-- Welcome Section -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <h1 class="text-3xl font-bold text-gray-900 mb-2">
+    <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded text-base font-semibold mr-2">Barangay Official</span>
+    Welcome, <%= current_user.email %>!
+  </h1>
+  <% if current_user.barangay %>
+    <p class="text-gray-600">Managing: <span class="font-semibold"><%= current_user.barangay.name %></span></p>
+  <% else %>
+    <p class="text-red-600">⚠️ No barangay assigned. Please contact admin.</p>
+  <% end %>
+</div>
+
+<% if current_user.barangay %>
+  <!-- Statistics -->
+  <div class="grid md:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="text-sm text-gray-600 mb-1">Total Reports</div>
+      <div class="text-3xl font-bold text-blue-600"><%= @barangay.reports.count %></div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="text-sm text-gray-600 mb-1">Pending</div>
+      <div class="text-3xl font-bold text-yellow-600"><%= @barangay.reports.pending.count %></div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="text-sm text-gray-600 mb-1">In Progress</div>
+      <div class="text-3xl font-bold text-orange-600"><%= @in_progress_reports %></div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="text-sm text-gray-600 mb-1">Resolved</div>
+      <div class="text-3xl font-bold text-green-600"><%= @resolved_reports %></div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+    <div class="flex gap-4">
+      <%= link_to reports_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
+        <span class="mr-2">📋</span> View All Reports
+      <% end %>
+      <%= link_to barangay_path(@barangay), class: "bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition border-2 border-blue-600 inline-flex items-center" do %>
+        <span class="mr-2">🏘️</span> Barangay Details
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pending Reports (Needs Attention) -->
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-gray-900">Pending Reports</h2>
+      <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-semibold"><%= @pending_reports.count %> Pending</span>
+    </div>
+    
+    <% if @pending_reports.any? %>
+      <div class="space-y-4">
+        <% @pending_reports.each do |report| %>
+          <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <h3 class="font-bold text-lg mb-2"><%= report.title %></h3>
+                <div class="flex flex-wrap gap-2 text-sm mb-2">
+                  <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><%= report.category.name %></span>
+                  <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full"><%= report.priority.titleize %> Priority</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-3"><%= truncate(report.description, length: 150) %></p>
+                <p class="text-gray-500 text-xs">Reported by <%= report.user.email %> • <%= time_ago_in_words(report.created_at) %> ago</p>
+              </div>
+              <div class="ml-4">
+                <%= link_to "View →", report, class: "bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition text-sm whitespace-nowrap" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12 text-gray-500">
+        <div class="text-6xl mb-4">✅</div>
+        <p class="text-lg">No pending reports! Great job!</p>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- No Barangay Assigned -->
+  <div class="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+    <div class="text-6xl mb-4">⚠️</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">No Barangay Assigned</h2>
+    <p class="text-gray-600 mb-4">You need to be assigned to a barangay to manage reports.</p>
+    <p class="text-sm text-gray-500">Please contact the system administrator.</p>
+  </div>
+<% end %>
+

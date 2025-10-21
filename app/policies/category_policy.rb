@@ -6,11 +6,14 @@ class CategoryPolicy < ApplicationPolicy
   end
   
   def index?
-    true # Anyone can view categories
+    # Only admins and residents can browse all categories
+    # Barangay officials don't need to manage categories
+    user&.admin? || user&.resident?
   end
   
   def show?
-    true # Anyone can view a category
+    # Only admins and residents can view category details
+    user&.admin? || user&.resident?
   end
   
   def create?
