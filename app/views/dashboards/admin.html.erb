@@ -57,177 +57,24 @@
   </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-  <h2 class="text-xl font-bold text-gray-900 mb-4">Admin Quick Actions</h2>
+<!-- Admin Navigation -->
+<div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+  <h2 class="text-xl font-bold text-gray-900 mb-4">Admin Management</h2>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <%= link_to reports_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-center" do %>
-      📋 All Reports
+    <%= link_to reports_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-center flex items-center justify-center" do %>
+      <span class="mr-2">📋</span> All Reports
     <% end %>
-    <%= link_to categories_path, class: "bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition text-center" do %>
-      🏷️ Categories
+    <%= link_to categories_path, class: "bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition text-center flex items-center justify-center" do %>
+      <span class="mr-2">🏷️</span> Categories
     <% end %>
-    <%= link_to barangays_path, class: "bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center" do %>
-      🏘️ Barangays
+    <%= link_to barangays_path, class: "bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center flex items-center justify-center" do %>
+      <span class="mr-2">🏘️</span> Barangays
     <% end %>
-    <%= link_to new_category_path, class: "bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition text-center" do %>
-      ➕ New Category
+    <%= link_to new_admin_barangay_captain_path, class: "bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition text-center flex items-center justify-center" do %>
+      <span class="mr-2">👤</span> Manage Captains
     <% end %>
   </div>
 </div>
-
-<!-- Barangay Captain Management -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-6">
-  <div class="flex justify-between items-center mb-4">
-    <div>
-      <h2 class="text-xl font-bold text-gray-900">Barangay Captain Management</h2>
-      <p class="text-gray-600 text-sm mt-1">Manage official accounts for barangay captains</p>
-    </div>
-    <%= link_to new_admin_barangay_captain_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
-      <span class="mr-2">➕</span> Create Captain Account
-    <% end %>
-  </div>
-
-  <!-- Captain Statistics -->
-  <div class="grid md:grid-cols-3 gap-6 mb-6">
-    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-      <div class="text-sm opacity-90 mb-1">Captains Assigned</div>
-      <div class="text-4xl font-bold"><%= @total_captains %></div>
-      <div class="text-sm opacity-90 mt-1">out of <%= @total_barangays %> barangays</div>
-    </div>
-    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
-      <div class="text-sm opacity-90 mb-1">Without Captain</div>
-      <div class="text-4xl font-bold"><%= @barangays_without_captains.count %></div>
-      <div class="text-sm opacity-90 mt-1">barangays need captains</div>
-    </div>
-    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-      <div class="text-sm opacity-90 mb-1">Completion</div>
-      <div class="text-4xl font-bold"><%= number_to_percentage((@total_captains.to_f / @total_barangays * 100 rescue 0), precision: 0) %></div>
-      <div class="text-sm opacity-90 mt-1">of barangays covered</div>
-    </div>
-  </div>
-
-  <!-- Barangays Without Captains -->
-  <% if @barangays_without_captains.any? %>
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-      <h3 class="font-semibold text-yellow-900 mb-2">⚠️ Barangays Without Captains (<%= @barangays_without_captains.count %>):</h3>
-      <div class="text-sm text-yellow-800">
-        <% if @barangays_without_captains.count <= 8 %>
-          <div class="flex flex-wrap gap-2">
-            <% @barangays_without_captains.each do |barangay| %>
-              <span class="bg-yellow-100 px-3 py-1 rounded-full"><%= barangay.name %></span>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="flex flex-wrap gap-2 mb-2">
-            <% @barangays_without_captains.first(8).each do |barangay| %>
-              <span class="bg-yellow-100 px-3 py-1 rounded-full"><%= barangay.name %></span>
-            <% end %>
-            <span class="bg-yellow-200 px-3 py-1 rounded-full font-semibold">+ <%= @barangays_without_captains.count - 8 %> more</span>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  <% else %>
-    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-      <div class="text-2xl mb-2">✅</div>
-      <p class="text-green-800 font-semibold">All barangays have captains assigned!</p>
-    </div>
-  <% end %>
-
-  <!-- Show Captain Credentials if just created -->
-  <% if @captain_credentials %>
-    <div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-6 mt-6">
-      <h3 class="text-lg font-bold text-blue-900 mb-3">✅ Captain Account Created Successfully!</h3>
-      <div class="bg-white rounded-lg p-4 mb-4">
-        <div class="grid md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <div class="text-gray-600 mb-1">📧 Email:</div>
-            <div class="font-mono font-semibold text-gray-900"><%= @captain_credentials['email'] %></div>
-          </div>
-          <div>
-            <div class="text-gray-600 mb-1">🔑 Default Password:</div>
-            <div class="font-mono font-semibold text-gray-900"><%= @captain_credentials['password'] %></div>
-          </div>
-          <div>
-            <div class="text-gray-600 mb-1">🏘️ Barangay:</div>
-            <div class="font-semibold text-gray-900"><%= @captain_credentials['barangay_name'] %></div>
-          </div>
-        </div>
-      </div>
-      <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-3">
-        <p class="text-sm text-yellow-900">
-          <strong>⚠️ Important:</strong> Share these credentials with the captain securely. 
-          They must change their password on first login. This information will not be shown again.
-        </p>
-      </div>
-    </div>
-  <% end %>
-</div>
-
-<!-- TODO: Move this section to a separate view later (for testing purposes) -->
-<!-- Created Captain Accounts (For Testing) -->
-<% if @barangay_captains.any? %>
-  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        <h2 class="text-xl font-bold text-gray-900">Created Captain Accounts</h2>
-        <p class="text-gray-600 text-sm mt-1">For testing purposes - will be moved to a separate page later</p>
-      </div>
-      <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold"><%= @barangay_captains.count %> account(s)</span>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-gray-50 border-b">
-          <tr>
-            <th class="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
-            <th class="text-left py-3 px-4 font-semibold text-gray-700">Barangay</th>
-            <th class="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-            <th class="text-left py-3 px-4 font-semibold text-gray-700">Created</th>
-            <th class="text-left py-3 px-4 font-semibold text-gray-700">Default Password</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @barangay_captains.each do |captain| %>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="py-3 px-4">
-                <div class="font-mono text-sm text-gray-900"><%= captain.email %></div>
-              </td>
-              <td class="py-3 px-4">
-                <% if captain.barangay %>
-                  <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium"><%= captain.barangay.name %></span>
-                <% else %>
-                  <span class="text-gray-400 text-xs">No barangay</span>
-                <% end %>
-              </td>
-              <td class="py-3 px-4">
-                <% if captain.confirmed_at %>
-                  <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">✓ Confirmed</span>
-                <% else %>
-                  <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">⏳ Unconfirmed</span>
-                <% end %>
-              </td>
-              <td class="py-3 px-4 text-gray-600 text-xs">
-                <%= time_ago_in_words(captain.created_at) %> ago
-              </td>
-              <td class="py-3 px-4">
-                <code class="bg-gray-100 px-2 py-1 rounded text-xs font-mono">Captain2024!</code>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-      <p class="text-sm text-blue-900">
-        <strong>ℹ️ Note:</strong> All captains are created with the default password <code class="bg-white px-2 py-1 rounded">Captain2024!</code>. 
-        They should change this password upon first login.
-      </p>
-    </div>
-  </div>
-<% end %>
 
 <!-- Recent Reports (System-wide) -->
 <div class="bg-white rounded-lg shadow-md p-6">

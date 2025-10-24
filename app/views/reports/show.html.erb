@@ -57,6 +57,37 @@
       <% end %>
     </div>
 
+    <!-- Map -->
+    <% if @report.latitude.present? && @report.longitude.present? %>
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-3">📍 Location Map</h2>
+        <iframe
+          width="100%"
+          height="384"
+          style="border:0; border-radius: 0.5rem;"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed/v1/place?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&q=<%= @report.latitude %>,<%= @report.longitude %>&zoom=15"
+          class="rounded-lg shadow-md">
+        </iframe>
+      </div>
+    <% elsif @report.address.present? %>
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-3">📍 Location Map</h2>
+        <iframe
+          width="100%"
+          height="384"
+          style="border:0; border-radius: 0.5rem;"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed/v1/place?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&q=<%= URI.encode_www_form_component(@report.address) %>&zoom=15"
+          class="rounded-lg shadow-md">
+        </iframe>
+      </div>
+    <% end %>
+
     <!-- Photos -->
     <% if @report.photos.attached? %>
       <div class="mb-6">

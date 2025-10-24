@@ -36,11 +36,46 @@
     <p class="text-xs text-gray-500 mt-1">Provide as much detail as possible about the issue</p>
   </div>
 
-  <!-- Address -->
-  <div class="mb-6">
-    <%= f.label :address, "Location/Address *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-    <%= f.text_field :address, placeholder: "e.g., Main Street corner 5th Avenue, Barangay Name", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500", required: true %>
-    <p class="text-xs text-gray-500 mt-1">Be specific about the location</p>
+  <!-- Location Picker -->
+  <div class="mb-6" data-controller="location-picker" data-location-picker-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>">
+    <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Location *</label>
+    
+    <!-- Map -->
+    <div class="mb-4">
+      <div 
+        data-location-picker-target="map"
+        class="w-full h-96 rounded-lg border-2 border-gray-300"
+        style="min-height: 400px;">
+      </div>
+      <p class="text-xs text-gray-500 mt-2">
+        🔵 Click on the map or drag the marker to set your exact location
+        <br>📱 We'll try to detect your current location automatically
+      </p>
+    </div>
+
+    <!-- Address Field -->
+    <div class="mb-4">
+      <%= f.label :address, "Address *", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <div class="flex gap-2">
+        <%= f.text_field :address, 
+            placeholder: "e.g., Main Street corner 5th Avenue, Barangay Name", 
+            class: "flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+            required: true,
+            data: { location_picker_target: "address" } %>
+        <button 
+          type="button"
+          data-location-picker-target="searchButton"
+          data-action="click->location-picker#searchAddress"
+          class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition whitespace-nowrap">
+          🔍 Search
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Type an address and click Search, or click/drag on the map</p>
+    </div>
+
+    <!-- Hidden Coordinate Fields -->
+    <%= f.hidden_field :latitude, data: { location_picker_target: "latitude" } %>
+    <%= f.hidden_field :longitude, data: { location_picker_target: "longitude" } %>
   </div>
 
   <!-- Barangay & Category (Side by Side) -->

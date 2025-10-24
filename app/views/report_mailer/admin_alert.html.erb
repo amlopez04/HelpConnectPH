@@ -1,0 +1,83 @@
+<h2>🚨 Admin Alert</h2>
+
+<p>Hello <%= @admin.email %>,</p>
+
+<p>An important alert requires your attention:</p>
+
+<% case @alert_type %>
+<% when 'critical_reports' %>
+  <div style="background-color: #fee2e2; padding: 20px; border-radius: 6px; border-left: 4px solid #dc2626; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #dc2626;">🚨 CRITICAL REPORTS ALERT</h3>
+    <p><strong><%= @critical_reports.count %></strong> critical reports are currently pending and need immediate attention!</p>
+    
+    <% if @critical_reports.any? %>
+      <h4>Critical Reports:</h4>
+      <div style="background-color: white; padding: 15px; border-radius: 4px; margin: 15px 0;">
+        <% @critical_reports.limit(5).each do |report| %>
+          <div style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
+            <strong><%= report.title %></strong><br>
+            <span style="color: #64748b; font-size: 14px;">
+              📍 <%= report.barangay.name %> • 
+              Reported by <%= report.user.email %> • 
+              <%= report.created_at.strftime("%B %d at %I:%M %p") %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+<% when 'no_captain' %>
+  <div style="background-color: #fef3c7; padding: 20px; border-radius: 6px; border-left: 4px solid #f59e0b; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #92400e;">⚠️ CAPTAIN ASSIGNMENT NEEDED</h3>
+    <p><strong>Barangay:</strong> <%= @barangay.name %></p>
+    <p><strong>Address:</strong> <%= @barangay.address %></p>
+    <p>This barangay currently has no assigned captain and cannot receive report notifications.</p>
+  </div>
+
+<% when 'system_error' %>
+  <div style="background-color: #fef2f2; padding: 20px; border-radius: 6px; border-left: 4px solid #ef4444; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #dc2626;">🔧 SYSTEM ERROR</h3>
+    <p><strong>Error:</strong> <%= @error %></p>
+    <p><strong>Time:</strong> <%= Time.current.strftime("%B %d, %Y at %I:%M %p") %></p>
+    <p>Please investigate this system error immediately.</p>
+  </div>
+
+<% else %>
+  <div style="background-color: #f0f9ff; padding: 20px; border-radius: 6px; border-left: 4px solid #0ea5e9; margin: 20px 0;">
+    <h3 style="margin-top: 0; color: #0c4a6e;">📢 ADMIN ALERT</h3>
+    <p><strong>Alert Type:</strong> <%= @alert_type.titleize %></p>
+    <p>Please review the system for any issues requiring attention.</p>
+  </div>
+<% end %>
+
+<%= link_to "View Admin Dashboard", root_url, class: "button" %>
+
+<div style="background-color: #f8fafc; padding: 20px; border-radius: 6px; margin: 30px 0;">
+  <h4 style="margin-top: 0; color: #374151;">🔧 Recommended Actions</h4>
+  <ul style="margin: 0;">
+    <% case @alert_type %>
+    <% when 'critical_reports' %>
+      <li>Review all critical reports immediately</li>
+      <li>Contact barangay captains for urgent issues</li>
+      <li>Escalate to city officials if necessary</li>
+    <% when 'no_captain' %>
+      <li>Assign a captain to <%= @barangay.name %></li>
+      <li>Send welcome email to new captain</li>
+      <li>Verify captain can access the system</li>
+    <% when 'system_error' %>
+      <li>Check system logs for more details</li>
+      <li>Restart services if necessary</li>
+      <li>Monitor system stability</li>
+    <% else %>
+      <li>Review system status</li>
+      <li>Check for any pending issues</li>
+      <li>Monitor user activity</li>
+    <% end %>
+  </ul>
+</div>
+
+<p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+  <strong>This alert was generated automatically by ParañaqueConnect.</strong><br>
+  Please take appropriate action to ensure system stability and user satisfaction.
+</p>

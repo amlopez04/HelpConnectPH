@@ -35,11 +35,11 @@
 
 # Ignore personal development notes and testing guides
 DEVELOPMENT_STEPS.md
-TESTING_WORKFLOW.md
-REPORT_FILTERING_FIX.md
-QUICK_TEST_GUIDE.md
-ACCESS_CONTROL_FIX.md
-POSTMARK_SETUP.md
+GOOGLE_MAPS_GUIDE.md
+RENDER_DEPLOYMENT.md
+# Ignore all documentation files and docs folder
+docs/
+*.md
 
 /app/assets/builds/*
 !/app/assets/builds/.keep

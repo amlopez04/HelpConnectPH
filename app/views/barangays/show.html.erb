@@ -68,6 +68,37 @@
   <% end %>
 </div>
 
+<!-- Map of Barangay Location -->
+<% if @barangay.latitude.present? && @barangay.longitude.present? %>
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">🗺️ Barangay Location</h2>
+    <iframe
+      width="100%"
+      height="384"
+      style="border:0; border-radius: 0.5rem;"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/place?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&q=<%= @barangay.latitude %>,<%= @barangay.longitude %>&zoom=14"
+      class="rounded-lg shadow-md">
+    </iframe>
+  </div>
+<% elsif @barangay.address.present? %>
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">🗺️ Barangay Location</h2>
+    <iframe
+      width="100%"
+      height="384"
+      style="border:0; border-radius: 0.5rem;"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/place?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&q=<%= URI.encode_www_form_component(@barangay.address) %>&zoom=14"
+      class="rounded-lg shadow-md">
+    </iframe>
+  </div>
+<% end %>
+
 <!-- Barangay Captain -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
   <div class="flex justify-between items-center mb-4">
@@ -125,7 +156,7 @@
   
   <% if @reports.any? %>
     <div class="space-y-4">
-      <% @reports.limit(10).each do |report| %>
+      <% @reports.each do |report| %>
         <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
           <div class="flex justify-between items-start mb-2">
             <div class="flex-1">
@@ -157,11 +188,11 @@
         </div>
       <% end %>
       
-      <% if @reports.count > 10 %>
-        <div class="text-center pt-4">
-          <p class="text-gray-600">Showing 10 of <%= @reports.count %> reports</p>
-        </div>
-      <% end %>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="mt-6 flex justify-center">
+      <%= paginate @reports %>
     </div>
   <% else %>
     <div class="text-center py-12">

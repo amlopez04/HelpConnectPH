@@ -1,4 +1,4 @@
-# Clear existing data (optional - comment out if you want to keep existing data)
+# Clear existing data
 puts "Clearing existing data..."
 Report.destroy_all
 Comment.destroy_all
@@ -27,7 +27,9 @@ barangays = [
 ]
 
 barangays_created = barangays.map do |barangay_data|
-  Barangay.create!(barangay_data)
+  Barangay.find_or_create_by!(name: barangay_data[:name]) do |barangay|
+    barangay.assign_attributes(barangay_data)
+  end
 end
 puts "Created #{barangays_created.count} barangays"
 
@@ -39,46 +41,46 @@ categories = [
   { name: "Stoplight", description: "Traffic light malfunctions", icon: "🚦" },
   { name: "Sidewalks", description: "Damaged or obstructed sidewalks", icon: "🚶" },
   { name: "Drainage", description: "Clogged or damaged drainage systems", icon: "🚰" },
-  { name: "Garbage", description: "Waste management and disposal issues", icon: "🗑️" }
+  { name: "Garbage", description: "Waste management and disposal issues", icon: "🗑️" },
+  { name: "Others", description: "Other issues not covered by the above categories", icon: "📋" }
 ]
 
 categories_created = categories.map do |category_data|
-  Category.create!(category_data)
+  Category.find_or_create_by!(name: category_data[:name]) do |category|
+    category.assign_attributes(category_data)
+  end
 end
 puts "Created #{categories_created.count} categories"
 
 puts "\nCreating Test Users..."
 
 # Admin User
-admin = User.create!(
-  email: "admin@test.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :admin,
-  confirmed_at: Time.current
-)
+admin = User.find_or_create_by!(email: "admin@test.com") do |user|
+  user.password = "password123"
+  user.password_confirmation = "password123"
+  user.role = :admin
+  user.confirmed_at = Time.current
+end
 puts "✅ Created Admin: admin@test.com / password123"
 
 # Barangay Official User (assigned to first barangay)
-official = User.create!(
-  email: "official@test.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :barangay_official,
-  barangay: barangays_created.first,
-  confirmed_at: Time.current
-)
-puts "✅ Created Barangay Official: official@test.com / password123"
+official = User.find_or_create_by!(email: "official@test.com") do |user|
+  user.password = "Captain2024!"
+  user.password_confirmation = "Captain2024!"
+  user.role = :barangay_official
+  user.barangay = barangays_created.first
+  user.confirmed_at = Time.current
+end
+puts "✅ Created Barangay Official: official@test.com / Captain2024!"
 puts "   Assigned to: #{barangays_created.first.name}"
 
 # Resident User
-resident = User.create!(
-  email: "resident@test.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :resident,
-  confirmed_at: Time.current
-)
+resident = User.find_or_create_by!(email: "resident@test.com") do |user|
+  user.password = "password123"
+  user.password_confirmation = "password123"
+  user.role = :resident
+  user.confirmed_at = Time.current
+end
 puts "✅ Created Resident: resident@test.com / password123"
 
 puts "\n" + "="*60

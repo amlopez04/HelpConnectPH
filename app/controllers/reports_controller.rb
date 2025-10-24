@@ -11,7 +11,7 @@ class ReportsController < ApplicationController
       @reports = @reports.where(status: params[:status])
     end
     
-    @reports = @reports.order(created_at: :desc)
+    @reports = @reports.order(created_at: :desc).page(params[:page]).per(10)
   end
   
   def show
@@ -29,6 +29,8 @@ class ReportsController < ApplicationController
     authorize @report
     
     if @report.save
+      # Send email notification to barangay captain
+      ReportMailer.new_report_notification(@report).deliver_now
       redirect_to @report, notice: "Report was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -42,7 +44,12 @@ class ReportsController < ApplicationController
   def update
     authorize @report
     
+    old_status = @report.status
     if @report.update(report_params)
+      # Send email notification if status changed
+      if old_status != @report.status
+        ReportMailer.status_change_notification(@report, old_status).deliver_now
+      end
       redirect_to @report, notice: "Report was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -62,7 +69,7 @@ class ReportsController < ApplicationController
   end
   
   def report_params
-    params.require(:report).permit(:title, :description, :address, :barangay_id, :category_id, :priority, :status, photos: [])
+    params.require(:report).permit(:title, :description, :address, :latitude, :longitude, :barangay_id, :category_id, :priority, :status, photos: [])
   end
 end
 

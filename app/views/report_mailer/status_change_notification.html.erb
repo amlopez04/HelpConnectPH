@@ -1,0 +1,41 @@
+<h2>📋 Your Report Status Has Been Updated</h2>
+
+<p>Hello <%= @report.user.email %>,</p>
+
+<p>Great news! The status of your report has been updated:</p>
+
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1e40af;"><%= @report.title %></h3>
+  <p><strong>📍 Location:</strong> <%= @report.address %></p>
+  <p><strong>🏘️ Barangay:</strong> <%= @report.barangay.name %></p>
+  
+  <div style="margin: 15px 0;">
+    <p><strong>Status Changed:</strong></p>
+    <p>
+      <span class="status-badge status-<%= @old_status %>" style="margin-right: 10px;"><%= @old_status.titleize %></span>
+      <span style="font-size: 18px;">→</span>
+      <span class="status-badge status-<%= @new_status %>" style="margin-left: 10px;"><%= @new_status.titleize %></span>
+    </p>
+  </div>
+</div>
+
+<% if @new_status == 'resolved' %>
+  <p style="background-color: #d1fae5; padding: 15px; border-radius: 6px; border-left: 4px solid #10b981;">
+    <strong>🎉 Issue Resolved!</strong><br>
+    Your report has been marked as resolved. Thank you for helping improve our community!
+  </p>
+<% elsif @new_status == 'in_progress' %>
+  <p style="background-color: #dbeafe; padding: 15px; border-radius: 6px; border-left: 4px solid #3b82f6;">
+    <strong>🔧 Work in Progress</strong><br>
+    Your report is now being addressed by the barangay officials. They will keep you updated on the progress.
+  </p>
+<% end %>
+
+<%= link_to "View Report Details", report_url(@report), class: "button" %>
+
+<p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+  <strong>What's Next?</strong><br>
+  • Check the report for any new comments from officials<br>
+  • If you have additional information, you can add comments<br>
+  • If the issue persists, you can create a follow-up report
+</p>

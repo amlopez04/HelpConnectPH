@@ -9,6 +9,8 @@ class CommentsController < ApplicationController
     authorize @comment
     
     if @comment.save
+      # Send email notification to report creator
+      ReportMailer.new_comment_notification(@report, @comment).deliver_now
       redirect_to @report, notice: "Comment was successfully added."
     else
       redirect_to @report, alert: "Failed to add comment: #{@comment.errors.full_messages.join(', ')}"

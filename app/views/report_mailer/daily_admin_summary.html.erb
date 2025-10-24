@@ -1,0 +1,53 @@
+<h2>📊 Daily System Summary</h2>
+
+<p>Hello <%= @admin.email %>,</p>
+
+<p>Here's your daily overview of the ParañaqueConnect system:</p>
+
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1e40af;">📈 Today's Activity</h3>
+  <p><strong>📝 New Reports:</strong> <%= @reports_today.count %></p>
+  <p><strong>⏳ Pending Reports:</strong> <%= @pending_reports %></p>
+  <p><strong>🚨 Critical Reports:</strong> <%= @critical_reports %></p>
+  <p><strong>👥 Barangays Without Captains:</strong> <%= @barangays_without_captains %></p>
+</div>
+
+<% if @reports_today.any? %>
+  <h3>📋 Recent Reports (Last 24 Hours)</h3>
+  <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 15px 0;">
+    <% @reports_today.limit(5).each do |report| %>
+      <div style="border-bottom: 1px solid #e2e8f0; padding: 10px 0;">
+        <strong><%= report.title %></strong><br>
+        <span style="color: #64748b; font-size: 14px;">
+          📍 <%= report.barangay.name %> • 
+          <span class="status-badge status-<%= report.status %>"><%= report.status.titleize %></span>
+          <span class="status-badge priority-<%= report.priority %>"><%= report.priority.titleize %></span>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @critical_reports > 0 %>
+  <div style="background-color: #fee2e2; padding: 20px; border-radius: 6px; border-left: 4px solid #dc2626; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #dc2626;">🚨 URGENT ACTION REQUIRED</h4>
+    <p style="margin: 0;">You have <strong><%= @critical_reports %></strong> critical reports that need immediate attention!</p>
+  </div>
+<% end %>
+
+<% if @barangays_without_captains > 0 %>
+  <div style="background-color: #fef3c7; padding: 20px; border-radius: 6px; border-left: 4px solid #f59e0b; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #92400e;">⚠️ Captain Assignment Needed</h4>
+    <p style="margin: 0;"><strong><%= @barangays_without_captains %></strong> barangays still need captain assignments.</p>
+  </div>
+<% end %>
+
+<%= link_to "View Admin Dashboard", root_url, class: "button" %>
+
+<p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+  <strong>Quick Actions:</strong><br>
+  • Review critical reports requiring immediate attention<br>
+  • Assign captains to barangays without leadership<br>
+  • Monitor system performance and user activity<br>
+  • Check for any technical issues or errors
+</p>

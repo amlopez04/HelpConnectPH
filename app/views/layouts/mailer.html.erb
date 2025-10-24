@@ -1,13 +1,114 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParañaqueConnect</title>
     <style>
-      /* Email styles need to be inline */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8fafc;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .header p {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+      .content {
+        padding: 30px 20px;
+      }
+      .content h2 {
+        color: #1e40af;
+        margin-top: 0;
+        font-size: 20px;
+      }
+      .info-box {
+        background-color: #f1f5f9;
+        border-left: 4px solid #3b82f6;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .status-pending { background-color: #fef3c7; color: #92400e; }
+      .status-in-progress { background-color: #fed7aa; color: #c2410c; }
+      .status-resolved { background-color: #d1fae5; color: #065f46; }
+      .priority-critical { background-color: #fee2e2; color: #dc2626; }
+      .priority-high { background-color: #fed7aa; color: #c2410c; }
+      .priority-medium { background-color: #fef3c7; color: #92400e; }
+      .priority-low { background-color: #f3f4f6; color: #374151; }
+      .button {
+        display: inline-block;
+        background-color: #3b82f6;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+      .button:hover {
+        background-color: #2563eb;
+      }
+      .footer {
+        background-color: #f8fafc;
+        padding: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #64748b;
+        border-top: 1px solid #e2e8f0;
+      }
+      .footer a {
+        color: #3b82f6;
+        text-decoration: none;
+      }
     </style>
   </head>
-
   <body>
-    <%= yield %>
+    <div class="email-container">
+      <div class="header">
+        <h1>🏘️ ParañaqueConnect</h1>
+        <p>Community Reporting System</p>
+      </div>
+      
+      <div class="content">
+        <%= yield %>
+      </div>
+      
+      <div class="footer">
+        <p>This email was sent from ParañaqueConnect - Parañaque City's official community reporting system.</p>
+        <p>If you have any questions, please contact us at <a href="mailto:paranaqueconnect@deidei.tech">paranaqueconnect@deidei.tech</a></p>
+      </div>
+    </div>
   </body>
 </html>

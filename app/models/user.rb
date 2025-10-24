@@ -12,6 +12,9 @@ class User < ApplicationRecord
   # User roles
   enum :role, { resident: 0, barangay_official: 1, admin: 2 }, default: :resident
 
+  # Callbacks
+  after_update :send_welcome_email_if_confirmed
+
   # Validations
   # Ensure only one barangay official (captain) per barangay
   validates :barangay_id, uniqueness: { 
@@ -19,4 +22,13 @@ class User < ApplicationRecord
     conditions: -> { where(role: :barangay_official) },
     message: "already has a captain assigned" 
   }, if: :barangay_official?
+
+  private
+
+  def send_welcome_email_if_confirmed
+    # Send welcome email after email confirmation
+    if resident? && confirmed_at_changed? && confirmed_at.present?
+      ReportMailer.welcome_resident(self).deliver_now
+    end
+  end
 end

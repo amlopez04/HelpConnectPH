@@ -27,17 +27,6 @@ class DashboardsController < ApplicationController
       @total_categories = Category.count
       @recent_reports = policy_scope(Report).includes(:user, :category, :barangay).order(created_at: :desc).limit(10)
       
-      # Barangay Captain statistics
-      @barangays_with_captains = User.where(role: :barangay_official).includes(:barangay).pluck(:barangay_id)
-      @total_captains = @barangays_with_captains.count
-      @barangays_without_captains = Barangay.where.not(id: @barangays_with_captains).order(:name)
-      
-      # For testing: List all created captain accounts
-      @barangay_captains = User.where(role: :barangay_official).includes(:barangay).order(created_at: :desc)
-      
-      # Retrieve captain credentials from session if available
-      @captain_credentials = session.delete(:captain_credentials)
-      
       render :admin
     else
       redirect_to root_path, alert: "Invalid user role"

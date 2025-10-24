@@ -4,12 +4,12 @@ class BarangaysController < ApplicationController
   
   def index
     authorize Barangay
-    @barangays = Barangay.all
+    @barangays = Barangay.all.page(params[:page]).per(12)
   end
   
   def show
     authorize @barangay
-    @reports = @barangay.reports.includes(:user, :category).order(created_at: :desc)
+    @reports = @barangay.reports.includes(:user, :category).order(created_at: :desc).page(params[:page]).per(8)
   end
   
   def new

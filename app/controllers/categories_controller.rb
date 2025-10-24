@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
   
   def index
     authorize Category
-    @categories = Category.all
+    @categories = Category.all.page(params[:page]).per(12)
   end
   
   def show

@@ -31,6 +31,9 @@ class Admin::BarangayCaptainsController < ApplicationController
     @user.skip_confirmation!
 
     if @user.save
+      # Send welcome email to the new captain
+      ReportMailer.welcome_captain(@user).deliver_now
+      
       # DEBUG: Verify password was saved correctly
       Rails.logger.info "=== Captain Account Created ==="
       Rails.logger.info "Email: #{@user.email}"

@@ -19,5 +19,10 @@ class Report < ApplicationRecord
   
   # Geocoding
   geocoded_by :address
-  after_validation :geocode, if: :address_changed?
+  after_validation :geocode, if: :should_geocode?
+
+  # Only geocode if we don't already have coordinates
+  def should_geocode?
+    address_changed? && (latitude.blank? || longitude.blank?)
+  end
 end
