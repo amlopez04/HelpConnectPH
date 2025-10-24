@@ -4,9 +4,12 @@
     <h1 class="text-3xl font-bold text-gray-900">Community Reports</h1>
     <p class="text-gray-600 mt-2">View and track community issues reported by residents.</p>
   </div>
-  <% if user_signed_in? && !current_user.admin? %>
+  <% if user_signed_in? && current_user.resident? %>
     <%= link_to new_report_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
-      <span class="mr-2">➕</span> New Report
+      <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+      </svg>
+      New Report
     <% end %>
   <% end %>
 </div>
@@ -25,7 +28,7 @@
 <% if @reports.any? %>
   <div class="grid gap-6">
     <% @reports.each do |report| %>
-      <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
+      <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1">
         <div class="p-6">
           <!-- Header -->
           <div class="flex justify-between items-start mb-4">
@@ -86,7 +89,7 @@
         No reports yet.
       <% end %>
     </p>
-    <% if user_signed_in? && !current_user.admin? %>
+    <% if user_signed_in? && current_user.resident? %>
       <%= link_to "Create First Report", new_report_path, class: "inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition" %>
     <% end %>
   </div>

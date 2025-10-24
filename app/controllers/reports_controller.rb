@@ -1,6 +1,6 @@
 class ReportsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_report, only: [:show, :edit, :update, :destroy]
+  before_action :set_report, only: [:show, :edit, :update, :destroy, :approve, :reject]
   
   def index
     # Use Pundit policy scope to filter reports based on user role
@@ -29,9 +29,10 @@ class ReportsController < ApplicationController
     authorize @report
     
     if @report.save
-      # Send email notification to barangay captain
-      ReportMailer.new_report_notification(@report).deliver_now
-      redirect_to @report, notice: "Report was successfully created."
+      # Send email notification to admin for approval (not to barangay captain yet)
+      ReportMailer.admin_new_report_notification(@report).deliver_now
+      
+      redirect_to @report, notice: "Report was successfully submitted and is pending admin approval."
     else
       render :new, status: :unprocessable_entity
     end
@@ -60,6 +61,37 @@ class ReportsController < ApplicationController
     authorize @report
     @report.destroy
     redirect_to reports_path, notice: "Report was successfully deleted."
+  end
+
+  # Admin approval action
+  def approve
+    authorize @report, :update?
+    
+    if @report.update(status: :pending)
+      # Now send email to barangay captain after approval
+      ReportMailer.new_report_notification(@report).deliver_now
+      
+      # Send confirmation email to report creator
+      ReportMailer.report_approved_notification(@report).deliver_now
+      
+      redirect_to @report, notice: "Report approved and sent to barangay captain."
+    else
+      redirect_to @report, alert: "Failed to approve report."
+    end
+  end
+
+  # Admin rejection action
+  def reject
+    authorize @report, :update?
+    
+    if @report.update(status: :closed)
+      # Send rejection email to report creator
+      ReportMailer.report_rejected_notification(@report).deliver_now
+      
+      redirect_to @report, notice: "Report rejected and closed."
+    else
+      redirect_to @report, alert: "Failed to reject report."
+    end
   end
   
   private

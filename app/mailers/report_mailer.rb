@@ -1,5 +1,74 @@
 class ReportMailer < Devise::Mailer
-  # Email sent to barangay captain when a new report is created
+  # Email sent to admin when a new report is created (for quality control)
+  def admin_new_report_notification(report)
+    @report = report
+    
+    # Find all admin users
+    @admins = User.where(role: :admin)
+    
+    # Only send if there are admins
+    return unless @admins.any?
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/admin_new_report_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report,
+        admins: @admins
+      }
+    )
+    
+    # Send to all admins
+    admin_emails = @admins.pluck(:email)
+    ResendHelper.send_email(
+      to: admin_emails,
+      subject: "New Report Submitted: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
+    )
+  end
+
+  # Email sent to report creator when report is approved
+  def report_approved_notification(report)
+    @report = report
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/report_approved_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @report.user.email,
+      subject: "Report Approved: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
+    )
+  end
+
+  # Email sent to report creator when report is rejected
+  def report_rejected_notification(report)
+    @report = report
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/report_rejected_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @report.user.email,
+      subject: "Report Update: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
+    )
+  end
+
+  # Email sent to barangay captain when a new report is created (after admin approval)
   def new_report_notification(report)
     @report = report
     
@@ -11,9 +80,20 @@ class ReportMailer < Devise::Mailer
     # Only send email if there's a captain for this barangay
     return unless @barangay_captain.present?
     
-    mail(
-      to: [@barangay_captain.email],
-      subject: "🚨 New Report: #{@report.title} - #{@report.barangay.name}"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/new_report_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report,
+        barangay_captain: @barangay_captain
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @barangay_captain.email,
+      subject: "New Report: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
     )
   end
 
@@ -23,9 +103,21 @@ class ReportMailer < Devise::Mailer
     @old_status = old_status
     @new_status = report.status
     
-    mail(
-      to: [@report.user.email],
-      subject: "📋 Report Update: #{@report.title} - Status Changed to #{@new_status.titleize}"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/status_change_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report,
+        old_status: @old_status,
+        new_status: @new_status
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @report.user.email,
+      subject: "Report Update: #{@report.title} - Status Changed to #{@new_status.titleize}",
+      html: html_content
     )
   end
 
@@ -38,9 +130,21 @@ class ReportMailer < Devise::Mailer
     # Don't notify the report creator if they commented on their own report
     return if @commenter == @report.user
     
-    mail(
-      to: [@report.user.email],
-      subject: "💬 New Comment on Your Report: #{@report.title}"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/new_comment_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report,
+        comment: @comment,
+        commenter: @commenter
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @report.user.email,
+      subject: "New Comment on Your Report: #{@report.title}",
+      html: html_content
     )
   end
 
@@ -52,9 +156,20 @@ class ReportMailer < Devise::Mailer
     # Only send email if captain has a barangay assigned
     return unless @barangay.present?
     
-    mail(
-      to: [@captain.email],
-      subject: "👋 Welcome to ParañaqueConnect - Barangay Captain Account"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/welcome_captain',
+      layout: 'mailer',
+      locals: { 
+        captain: @captain,
+        barangay: @barangay
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @captain.email,
+      subject: "Welcome to ParañaqueConnect - Barangay Captain Account",
+      html: html_content
     )
   end
 
@@ -62,9 +177,19 @@ class ReportMailer < Devise::Mailer
   def welcome_resident(resident)
     @resident = resident
     
-    mail(
-      to: [@resident.email],
-      subject: "👋 Welcome to ParañaqueConnect - Your Account is Ready!"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/welcome_resident',
+      layout: 'mailer',
+      locals: { 
+        resident: @resident
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @resident.email,
+      subject: "Welcome to ParañaqueConnect - Your Account is Ready!",
+      html: html_content
     )
   end
 
@@ -75,7 +200,7 @@ class ReportMailer < Devise::Mailer
     
     mail(
       to: [@resident.email],
-      subject: "📧 Welcome to ParañaqueConnect - Your Account is Ready!"
+      subject: "Welcome to ParañaqueConnect - Your Account is Ready!"
     )
   end
 
@@ -86,7 +211,7 @@ class ReportMailer < Devise::Mailer
     
     mail(
       to: [@user.email],
-      subject: "🔒 Reset Your Password - ParañaqueConnect"
+      subject: "Reset Your Password - ParañaqueConnect"
     )
   end
 
@@ -97,7 +222,7 @@ class ReportMailer < Devise::Mailer
     
     mail(
       to: [@user.email],
-      subject: "📧 Confirm Your Email - ParañaqueConnect"
+      subject: "Confirm Your Email - ParañaqueConnect"
     )
   end
 
@@ -106,8 +231,18 @@ class ReportMailer < Devise::Mailer
   
   def confirmation_instructions(record, token, opts = {})
     # Send confirmation + welcome email for new registrations
-    mailer = confirmation_and_welcome(record, token)
-    html_content = mailer.body.to_s
+    @user = record
+    @confirmation_token = token
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/confirmation_instructions',
+      layout: 'mailer',
+      locals: { 
+        user: @user,
+        confirmation_token: @confirmation_token
+      }
+    )
     
     ResendHelper.send_email(
       to: record.email,
@@ -118,12 +253,22 @@ class ReportMailer < Devise::Mailer
 
   def reset_password_instructions(record, token, opts = {})
     # Send password reset email
-    mailer = password_reset(record, token)
-    html_content = mailer.body.to_s
+    @user = record
+    @reset_token = token
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/password_reset',
+      layout: 'mailer',
+      locals: { 
+        user: @user,
+        reset_token: @reset_token
+      }
+    )
     
     ResendHelper.send_email(
       to: record.email,
-      subject: "🔒 Reset Your Password - ParañaqueConnect",
+      subject: "Reset Your Password - ParañaqueConnect",
       html: html_content
     )
   end
@@ -131,16 +276,17 @@ class ReportMailer < Devise::Mailer
   def unlock_instructions(record, token, opts = {})
     html_content = render_to_string(
       template: 'devise/mailer/unlock_instructions',
+      layout: 'mailer',
       locals: { 
-        @email: record.email,
-        @resource: record,
-        @token: token
+        email: record.email,
+        resource: record,
+        token: token
       }
     )
     
     ResendHelper.send_email(
       to: record.email,
-      subject: "🔓 Unlock Your Account - ParañaqueConnect",
+      subject: "Unlock Your Account - ParañaqueConnect",
       html: html_content
     )
   end
@@ -148,15 +294,16 @@ class ReportMailer < Devise::Mailer
   def email_changed(record, opts = {})
     html_content = render_to_string(
       template: 'devise/mailer/email_changed',
+      layout: 'mailer',
       locals: { 
-        @email: record.email,
-        @resource: record
+        email: record.email,
+        resource: record
       }
     )
     
     ResendHelper.send_email(
       to: record.email,
-      subject: "📧 Email Address Changed - ParañaqueConnect",
+      subject: "Email Address Changed - ParañaqueConnect",
       html: html_content
     )
   end
@@ -164,15 +311,16 @@ class ReportMailer < Devise::Mailer
   def password_change(record, opts = {})
     html_content = render_to_string(
       template: 'devise/mailer/password_change',
+      layout: 'mailer',
       locals: { 
-        @email: record.email,
-        @resource: record
+        email: record.email,
+        resource: record
       }
     )
     
     ResendHelper.send_email(
       to: record.email,
-      subject: "🔒 Password Changed - ParañaqueConnect",
+      subject: "Password Changed - ParañaqueConnect",
       html: html_content
     )
   end
@@ -185,9 +333,23 @@ class ReportMailer < Devise::Mailer
     @critical_reports = Report.critical.count
     @barangays_without_captains = Barangay.left_joins(:users).where(users: { role: :barangay_official }).where(users: { id: nil }).count
     
-    mail(
-      to: [@admin.email],
-      subject: "📊 Daily Summary - ParañaqueConnect System Overview"
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/daily_admin_summary',
+      layout: 'mailer',
+      locals: { 
+        admin: @admin,
+        reports_today: @reports_today,
+        pending_reports: @pending_reports,
+        critical_reports: @critical_reports,
+        barangays_without_captains: @barangays_without_captains
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @admin.email,
+      subject: "Daily Summary - ParañaqueConnect System Overview",
+      html: html_content
     )
   end
 
@@ -200,20 +362,35 @@ class ReportMailer < Devise::Mailer
     case alert_type
     when 'critical_reports'
       @critical_reports = Report.critical.pending
-      subject = "🚨 URGENT: #{@critical_reports.count} Critical Reports Need Attention"
+      subject = "URGENT: #{@critical_reports.count} Critical Reports Need Attention"
     when 'no_captain'
       @barangay = data[:barangay]
-      subject = "⚠️ Barangay #{@barangay.name} Needs Captain Assignment"
+      subject = "Barangay #{@barangay.name} Needs Captain Assignment"
     when 'system_error'
       @error = data[:error]
-      subject = "🔧 System Alert: #{@error}"
+      subject = "System Alert: #{@error}"
     else
-      subject = "📢 Admin Alert: #{alert_type.titleize}"
+      subject = "Admin Alert: #{alert_type.titleize}"
     end
     
-    mail(
-      to: [@admin.email],
-      subject: subject
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/admin_alert',
+      layout: 'mailer',
+      locals: { 
+        admin: @admin,
+        alert_type: @alert_type,
+        data: @data,
+        critical_reports: @critical_reports,
+        barangay: @barangay,
+        error: @error
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @admin.email,
+      subject: subject,
+      html: html_content
     )
   end
 end

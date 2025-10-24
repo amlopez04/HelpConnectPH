@@ -11,19 +11,19 @@
 <div class="mb-6">
   <h2 class="text-xl font-bold text-gray-900 mb-4">System Overview</h2>
   <div class="grid md:grid-cols-4 gap-6">
-    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
       <div class="text-sm opacity-90 mb-1">Total Reports</div>
       <div class="text-4xl font-bold"><%= @total_reports %></div>
     </div>
-    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 rounded-xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
       <div class="text-sm opacity-90 mb-1">Barangays</div>
       <div class="text-4xl font-bold"><%= @total_barangays %></div>
     </div>
-    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
       <div class="text-sm opacity-90 mb-1">Categories</div>
       <div class="text-4xl font-bold"><%= @total_categories %></div>
     </div>
-    <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+    <div class="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
       <div class="text-sm opacity-90 mb-1">Total Users</div>
       <div class="text-4xl font-bold"><%= User.count %></div>
     </div>
@@ -33,7 +33,12 @@
 <!-- Report Status Breakdown -->
 <div class="mb-6">
   <h2 class="text-xl font-bold text-gray-900 mb-4">Report Status Breakdown</h2>
-  <div class="grid md:grid-cols-4 gap-6">
+  <div class="grid md:grid-cols-5 gap-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="text-sm text-gray-600 mb-1">Pending Approval</div>
+      <div class="text-3xl font-bold text-purple-600"><%= Report.pending_approval.count %></div>
+      <div class="text-xs text-gray-500 mt-2"><%= number_to_percentage((Report.pending_approval.count.to_f / @total_reports * 100 rescue 0), precision: 1) %> of total</div>
+    </div>
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="text-sm text-gray-600 mb-1">Pending</div>
       <div class="text-3xl font-bold text-yellow-600"><%= @pending_reports %></div>
@@ -57,24 +62,50 @@
   </div>
 </div>
 
-<!-- Admin Navigation -->
-<div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
-  <h2 class="text-xl font-bold text-gray-900 mb-4">Admin Management</h2>
-  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <%= link_to reports_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-center flex items-center justify-center" do %>
-      <span class="mr-2">📋</span> All Reports
-    <% end %>
-    <%= link_to categories_path, class: "bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition text-center flex items-center justify-center" do %>
-      <span class="mr-2">🏷️</span> Categories
-    <% end %>
-    <%= link_to barangays_path, class: "bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center flex items-center justify-center" do %>
-      <span class="mr-2">🏘️</span> Barangays
-    <% end %>
-    <%= link_to new_admin_barangay_captain_path, class: "bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition text-center flex items-center justify-center" do %>
-      <span class="mr-2">👤</span> Manage Captains
+<!-- Pending Approval Reports -->
+<% if Report.pending_approval.any? %>
+  <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-purple-900">⚠️ Reports Pending Approval</h2>
+      <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-semibold"><%= Report.pending_approval.count %> waiting</span>
+    </div>
+    <p class="text-purple-700 mb-4">These reports need your approval before they can be sent to barangay captains.</p>
+    
+    <div class="space-y-4">
+      <% Report.pending_approval.limit(5).each do |report| %>
+        <div class="bg-white border border-purple-200 rounded-lg p-4">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <h3 class="font-bold text-lg mb-2"><%= report.title %></h3>
+              <div class="flex flex-wrap gap-2 text-sm mb-2">
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><%= report.category.name %></span>
+                <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full"><%= report.barangay.name %></span>
+                <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full"><%= report.priority.titleize %></span>
+                <% if report.potential_spam? %>
+                  <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">⚠️ Potential Spam</span>
+                <% end %>
+                <% if report.potential_duplicates.any? %>
+                  <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">⚠️ <%= report.potential_duplicates.count %> Duplicates</span>
+                <% end %>
+              </div>
+              <p class="text-gray-600 text-sm mb-2"><%= truncate(report.description, length: 120) %></p>
+              <p class="text-gray-500 text-xs">Reported by <%= report.user.email %> • <%= time_ago_in_words(report.created_at) %> ago</p>
+            </div>
+            <div class="ml-4 flex gap-2">
+              <%= link_to "Review →", report, class: "bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition text-sm whitespace-nowrap" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    
+    <% if Report.pending_approval.count > 5 %>
+      <div class="text-center mt-4">
+        <%= link_to "View All Pending Approval Reports →", reports_path(status: 'pending_approval'), class: "text-purple-600 hover:text-purple-800 font-semibold" %>
+      </div>
     <% end %>
   </div>
-</div>
+<% end %>
 
 <!-- Recent Reports (System-wide) -->
 <div class="bg-white rounded-lg shadow-md p-6">
@@ -86,14 +117,14 @@
   <% if @recent_reports.any? %>
     <div class="space-y-4">
       <% @recent_reports.each do |report| %>
-        <div class="border-l-4 <%= report.pending? ? 'border-yellow-500 bg-yellow-50' : report.in_progress? ? 'border-orange-500 bg-orange-50' : report.resolved? ? 'border-green-500 bg-green-50' : 'border-gray-500 bg-gray-50' %> p-4 rounded">
+        <div class="border-l-4 <%= report.pending_approval? ? 'border-purple-500 bg-purple-50' : report.pending? ? 'border-yellow-500 bg-yellow-50' : report.in_progress? ? 'border-orange-500 bg-orange-50' : report.resolved? ? 'border-green-500 bg-green-50' : 'border-gray-500 bg-gray-50' %> p-4 rounded">
           <div class="flex justify-between items-start">
             <div class="flex-1">
               <h3 class="font-bold text-lg mb-2"><%= report.title %></h3>
               <div class="flex flex-wrap gap-2 text-sm mb-2">
                 <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><%= report.category.name %></span>
                 <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full"><%= report.barangay.name %></span>
-                <span class="<%= report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full"><%= report.status.titleize %></span>
+                <span class="<%= report.pending_approval? ? 'bg-purple-100 text-purple-800' : report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full"><%= report.status.titleize %></span>
                 <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full"><%= report.priority.titleize %></span>
               </div>
               <p class="text-gray-600 text-sm mb-2"><%= truncate(report.description, length: 120) %></p>

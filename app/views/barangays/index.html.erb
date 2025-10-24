@@ -6,7 +6,10 @@
   </div>
   <% if policy(Barangay).create? %>
     <%= link_to new_barangay_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
-      <span class="mr-2">➕</span> New Barangay
+      <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+      </svg>
+      New Barangay
     <% end %>
   <% end %>
 </div>
@@ -35,7 +38,7 @@
 <% if @barangays.any? %>
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @barangays.each do |barangay| %>
-      <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
+      <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1">
         <div class="p-6">
           <!-- Header -->
           <div class="mb-4">

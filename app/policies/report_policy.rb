@@ -5,8 +5,8 @@ class ReportPolicy < ApplicationPolicy
         # Admins see all reports
         scope.all
       elsif user.barangay_official? && user.barangay.present?
-        # Barangay officials only see reports from their barangay
-        scope.where(barangay_id: user.barangay_id)
+        # Barangay officials only see approved reports from their barangay
+        scope.where(barangay_id: user.barangay_id).where.not(status: :pending_approval)
       else
         # Residents see all reports (to view community issues)
         scope.all
@@ -22,9 +22,9 @@ class ReportPolicy < ApplicationPolicy
     # Admins and residents can view any report
     return true if user.admin? || user.resident?
     
-    # Barangay officials can only view reports from their barangay
+    # Barangay officials can only view approved reports from their barangay
     if user.barangay_official? && user.barangay.present?
-      record.barangay_id == user.barangay_id
+      record.barangay_id == user.barangay_id && record.status != :pending_approval
     else
       false
     end
@@ -41,15 +41,18 @@ class ReportPolicy < ApplicationPolicy
   def update?
     return false unless user.present?
     
-    # Report creator can update their own report
-    return true if record.user == user
+    # Cannot update closed or resolved reports (except admins)
+    return false if (record.closed? || record.resolved?) && !user.admin?
+    
+    # Report creator can update their own report (if not closed or resolved)
+    return true if record.user == user && !record.closed? && !record.resolved?
     
     # Admin can update any report
     return true if user.admin?
     
-    # Barangay official can only update reports from their barangay
+    # Barangay official can only update reports from their barangay (if not closed or resolved)
     if user.barangay_official? && user.barangay.present?
-      record.barangay_id == user.barangay_id
+      record.barangay_id == user.barangay_id && !record.closed? && !record.resolved?
     else
       false
     end
@@ -60,7 +63,18 @@ class ReportPolicy < ApplicationPolicy
   end
   
   def destroy?
-    user.present? && (record.user == user || user.admin?)
+    return false unless user.present?
+    
+    # Cannot delete closed reports (except admins)
+    return false if record.closed? && !user.admin?
+    
+    # Report creator can delete their own report (if not closed)
+    return true if record.user == user && !record.closed?
+    
+    # Admin can delete any report
+    return true if user.admin?
+    
+    false
   end
 end
 

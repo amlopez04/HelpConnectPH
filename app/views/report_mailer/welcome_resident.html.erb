@@ -1,4 +1,4 @@
-<h2>👋 Welcome to ParañaqueConnect!</h2>
+<h2>Welcome to ParañaqueConnect!</h2>
 
 <p>Hello <%= @resident.email %>,</p>
 
@@ -6,21 +6,21 @@
 
 <div class="info-box">
   <h3 style="margin-top: 0; color: #1e40af;">Your Account Details</h3>
-  <p><strong>📧 Email:</strong> <%= @resident.email %></p>
-  <p><strong>👤 Role:</strong> Community Resident</p>
-  <p><strong>📅 Account Created:</strong> <%= @resident.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+  <p><strong>Email:</strong> <%= @resident.email %></p>
+  <p><strong>Role:</strong> Community Resident</p>
+  <p><strong>Account Created:</strong> <%= @resident.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
 </div>
 
-<h3>🚀 What You Can Do:</h3>
+<h3>What You Can Do:</h3>
 <ul>
-  <li><strong>📝 Report Issues:</strong> Submit reports about problems in your community</li>
-  <li><strong>📷 Add Photos:</strong> Upload photos to help describe the issue</li>
-  <li><strong>📍 Pin Location:</strong> Use our map to pinpoint exact locations</li>
-  <li><strong>💬 Add Comments:</strong> Communicate with barangay officials</li>
-  <li><strong>📊 Track Progress:</strong> Monitor the status of your reports</li>
+  <li><strong>Report Issues:</strong> Submit reports about problems in your community</li>
+  <li><strong>Add Photos:</strong> Upload photos to help describe the issue</li>
+  <li><strong>Pin Location:</strong> Use our map to pinpoint exact locations</li>
+  <li><strong>Add Comments:</strong> Communicate with barangay officials</li>
+  <li><strong>Track Progress:</strong> Monitor the status of your reports</li>
 </ul>
 
-<h3>📋 How to Report an Issue:</h3>
+<h3>How to Report an Issue:</h3>
 <ol>
   <li><strong>Click "New Report"</strong> on the dashboard</li>
   <li><strong>Choose Category:</strong> Select the type of issue (flooding, road damage, etc.)</li>
@@ -33,7 +33,7 @@
 <%= link_to "Start Reporting Issues", root_url, class: "button" %>
 
 <div style="background-color: #dbeafe; padding: 20px; border-radius: 6px; border-left: 4px solid #3b82f6; margin: 30px 0;">
-  <h4 style="margin-top: 0; color: #1e40af;">💡 Tips for Effective Reports:</h4>
+  <h4 style="margin-top: 0; color: #1e40af;">Tips for Effective Reports:</h4>
   <ul style="margin: 0;">
     <li><strong>Be Specific:</strong> Provide clear descriptions and exact locations</li>
     <li><strong>Add Photos:</strong> Visual evidence helps officials understand the issue</li>
@@ -43,12 +43,12 @@
 </div>
 
 <div style="background-color: #f0fdf4; padding: 20px; border-radius: 6px; border-left: 4px solid #10b981; margin: 30px 0;">
-  <h4 style="margin-top: 0; color: #065f46;">📞 Need Help?</h4>
+  <h4 style="margin-top: 0; color: #065f46;">Need Help?</h4>
   <p style="margin: 0;">If you have any questions or need assistance:</p>
   <p style="margin: 10px 0 0 0;">
-    📧 <a href="mailto:paranaqueconnect@deidei.tech">paranaqueconnect@deidei.tech</a><br>
-    📱 Phone: (02) 8820-7300<br>
-    🌐 Website: <a href="<%= root_url %>">ParañaqueConnect</a>
+    <a href="mailto:paranaqueconnect@deidei.tech">paranaqueconnect@deidei.tech</a><br>
+    Phone: (02) 8820-7300<br>
+    Website: <a href="<%= root_url %>">ParañaqueConnect</a>
   </p>
 </div>
 

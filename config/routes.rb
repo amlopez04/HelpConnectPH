@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+    confirmations: 'users/confirmations'
+  }
   
   # Email preview (development only)
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
@@ -30,6 +32,8 @@ Rails.application.routes.draw do
   get    '/reports/:id/edit', to: 'reports#edit',    as: 'edit_report'
   patch  '/reports/:id',      to: 'reports#update'
   delete '/reports/:id',      to: 'reports#destroy'
+  post   '/reports/:id/approve', to: 'reports#approve', as: 'approve_report'
+  post   '/reports/:id/reject',  to: 'reports#reject',  as: 'reject_report'
   
   # ============================================
   # COMMENTS (Nested under reports)

@@ -8,6 +8,9 @@ class ApplicationController < ActionController::Base
   # Handle authorization failures
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   
+  # Protect against CSRF attacks
+  protect_from_forgery with: :exception
+  
   private
   
   def user_not_authorized

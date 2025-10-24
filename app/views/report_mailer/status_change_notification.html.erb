@@ -31,7 +31,7 @@
   </p>
 <% end %>
 
-<%= link_to "View Report Details", report_url(@report), class: "button" %>
+<%= link_to "View Report Details", url_for(controller: 'reports', action: 'show', id: @report.id, only_path: false), class: "button" %>
 
 <p style="margin-top: 30px; font-size: 14px; color: #64748b;">
   <strong>What's Next?</strong><br>

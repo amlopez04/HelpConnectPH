@@ -1,17 +1,17 @@
 <!-- Hero Section -->
-<div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-xl p-8 md:p-16 mb-12">
+<div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl shadow-2xl p-8 md:p-16 mb-12">
   <div class="text-center">
-    <h1 class="text-4xl md:text-6xl font-bold mb-4">ParañaqueConnect</h1>
-    <p class="text-xl md:text-2xl mb-2">Connecting Parañaque Communities with their Barangay Officials</p>
-    <p class="text-lg opacity-90 mb-8">Report issues, track progress, and build a better Parañaque City together</p>
+    <h1 class="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">ParañaqueConnect</h1>
+    <p class="text-xl md:text-2xl mb-2 text-blue-100">Connecting Parañaque Communities with their Barangay Officials</p>
+    <p class="text-lg opacity-90 mb-8 text-blue-200">Report issues, track progress, and build a better Parañaque City together</p>
     
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <% if user_signed_in? %>
-        <%= link_to "Go to Dashboard", dashboard_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" %>
-        <%= link_to "View Reports", reports_path, class: "bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition border-2 border-white" %>
+        <%= link_to "Go to Dashboard", dashboard_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" %>
+        <%= link_to "View Reports", reports_path, class: "bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 transition border-2 border-blue-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" %>
       <% else %>
-        <%= link_to "Get Started", new_user_registration_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" %>
-        <%= link_to "Learn More", "#features", class: "bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition border-2 border-white" %>
+        <%= link_to "Get Started", new_user_registration_path, class: "bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" %>
+        <%= link_to "Learn More", "#features", class: "bg-blue-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 transition border-2 border-blue-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" %>
       <% end %>
     </div>
   </div>
@@ -20,42 +20,54 @@
 <!-- Features Section -->
 <div id="features" class="grid md:grid-cols-3 gap-8 mb-12">
   <!-- Feature 1 -->
-  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-    <div class="text-4xl mb-4">📝</div>
-    <h3 class="text-xl font-bold mb-2">Report Issues</h3>
+  <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+    <div class="text-blue-600 mb-4">
+      <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-2 text-gray-900">Report Issues</h3>
     <p class="text-gray-600">Residents can easily report community issues like flooding, road damage, and more with photos and location.</p>
   </div>
   
   <!-- Feature 2 -->
-  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-    <div class="text-4xl mb-4">👔</div>
-    <h3 class="text-xl font-bold mb-2">Track Progress</h3>
+  <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+    <div class="text-green-600 mb-4">
+      <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-2 text-gray-900">Track Progress</h3>
     <p class="text-gray-600">Barangay officials can manage reports, update status, and communicate directly with residents.</p>
   </div>
   
   <!-- Feature 3 -->
-  <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-    <div class="text-4xl mb-4">📊</div>
-    <h3 class="text-xl font-bold mb-2">View Statistics</h3>
+  <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+    <div class="text-purple-600 mb-4">
+      <svg class="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z"/>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold mb-2 text-gray-900">View Statistics</h3>
     <p class="text-gray-600">Transparent community updates with real-time statistics and progress tracking for all reports.</p>
   </div>
 </div>
 
 <!-- Stats Section -->
-<div class="bg-white rounded-lg shadow-md p-8 mb-12">
-  <h2 class="text-2xl font-bold text-center mb-8">Community Impact</h2>
+<div class="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-8 mb-12 border border-gray-100">
+  <h2 class="text-2xl font-bold text-center mb-8 text-gray-900">Community Impact</h2>
   <div class="grid md:grid-cols-3 gap-8 text-center">
-    <div>
-      <div class="text-4xl font-bold text-blue-600 mb-2"><%= Report.count %></div>
-      <div class="text-gray-600">Total Reports</div>
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2"><%= Report.count %></div>
+      <div class="text-blue-100">Total Reports</div>
     </div>
-    <div>
-      <div class="text-4xl font-bold text-green-600 mb-2"><%= Report.resolved.count rescue 0 %></div>
-      <div class="text-gray-600">Resolved Issues</div>
+    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2"><%= Report.resolved.count rescue 0 %></div>
+      <div class="text-green-100">Resolved Issues</div>
     </div>
-    <div>
-      <div class="text-4xl font-bold text-purple-600 mb-2"><%= Barangay.count %></div>
-      <div class="text-gray-600">Barangays Serving</div>
+    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+      <div class="text-4xl font-bold mb-2"><%= Barangay.count %></div>
+      <div class="text-purple-100">Barangays Serving</div>
     </div>
   </div>
 </div>

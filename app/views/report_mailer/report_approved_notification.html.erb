@@ -1,0 +1,39 @@
+<h2>Report Approved!</h2>
+
+<p>Hello <%= @report.user.email %>,</p>
+
+<p>Great news! Your report has been approved by our admin team and has been forwarded to the barangay captain for action.</p>
+
+<div class="info-box">
+  <h3 style="margin-top: 0; color: #1e40af;"><%= @report.title %></h3>
+  <p><strong>Location:</strong> <%= @report.address %></p>
+  <p><strong>Barangay:</strong> <%= @report.barangay.name %></p>
+  <p><strong>Category:</strong> <%= @report.category.name %></p>
+  <p><strong>Priority:</strong> <%= @report.priority.titleize %></p>
+  <p><strong>Status:</strong> <span class="status-badge status-pending">Pending</span></p>
+  <p><strong>Submitted:</strong> <%= @report.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+  
+  <p><strong>Description:</strong></p>
+  <p style="background-color: white; padding: 15px; border-radius: 4px; border: 1px solid #e2e8f0;"><%= @report.description %></p>
+</div>
+
+<% if @report.photos.attached? %>
+  <p><strong>Photos:</strong> <%= @report.photos.count %> photo(s) attached</p>
+<% end %>
+
+<div style="background-color: #d1fae5; padding: 20px; border-radius: 6px; border-left: 4px solid #10b981; margin: 30px 0;">
+  <h4 style="margin-top: 0; color: #047857;">What happens next?</h4>
+  <ul style="margin: 0;">
+    <li><strong>Barangay captain notified:</strong> They will review your report and take action</li>
+    <li><strong>Status updates:</strong> You'll receive notifications when the status changes</li>
+    <li><strong>Comments:</strong> The captain may add comments or ask for clarification</li>
+    <li><strong>Resolution:</strong> You'll be notified when the issue is resolved</li>
+  </ul>
+</div>
+
+<%= link_to "View Report", url_for(controller: 'reports', action: 'show', id: @report.id, only_path: false), class: "button" %>
+
+<p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+  <strong>Report ID:</strong> #<%= @report.id %><br>
+  <strong>Thank you for helping make Parañaque City a better place!</strong>
+</p>

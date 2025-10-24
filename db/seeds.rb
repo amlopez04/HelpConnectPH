@@ -35,14 +35,14 @@ puts "Created #{barangays_created.count} barangays"
 
 puts "\nCreating Categories..."
 categories = [
-  { name: "Flooding", description: "Water accumulation and flood-related issues", icon: "💧" },
-  { name: "Road Damage", description: "Potholes, cracks, and road infrastructure problems", icon: "🛣️" },
-  { name: "Streetlight", description: "Broken or non-functioning street lights", icon: "💡" },
-  { name: "Stoplight", description: "Traffic light malfunctions", icon: "🚦" },
-  { name: "Sidewalks", description: "Damaged or obstructed sidewalks", icon: "🚶" },
-  { name: "Drainage", description: "Clogged or damaged drainage systems", icon: "🚰" },
-  { name: "Garbage", description: "Waste management and disposal issues", icon: "🗑️" },
-  { name: "Others", description: "Other issues not covered by the above categories", icon: "📋" }
+  { name: "Flooding", description: "Water accumulation and flood-related issues" },
+  { name: "Road Damage", description: "Potholes, cracks, and road infrastructure problems" },
+  { name: "Streetlight", description: "Broken or non-functioning street lights" },
+  { name: "Stoplight", description: "Traffic light malfunctions" },
+  { name: "Sidewalks", description: "Damaged or obstructed sidewalks" },
+  { name: "Drainage", description: "Clogged or damaged drainage systems" },
+  { name: "Garbage", description: "Waste management and disposal issues" },
+  { name: "Others", description: "Other issues not covered by the above categories" }
 ]
 
 categories_created = categories.map do |category_data|
@@ -55,53 +55,57 @@ puts "Created #{categories_created.count} categories"
 puts "\nCreating Test Users..."
 
 # Admin User
-admin = User.find_or_create_by!(email: "admin@test.com") do |user|
+admin = User.find_or_create_by!(email: "alea.mikaela04@gmail.com") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = :admin
   user.confirmed_at = Time.current
 end
-puts "✅ Created Admin: admin@test.com / password123"
+puts "✅ Created Admin: alea.mikaela04@gmail.com / password123"
 
 # Barangay Official User (assigned to first barangay)
-official = User.find_or_create_by!(email: "official@test.com") do |user|
+official = User.find_or_create_by!(email: "amlopez14@up.edu.ph") do |user|
   user.password = "Captain2024!"
   user.password_confirmation = "Captain2024!"
   user.role = :barangay_official
   user.barangay = barangays_created.first
   user.confirmed_at = Time.current
 end
-puts "✅ Created Barangay Official: official@test.com / Captain2024!"
+puts "✅ Created Barangay Official: amlopez14@up.edu.ph / Captain2024!"
 puts "   Assigned to: #{barangays_created.first.name}"
 
 # Resident User
-resident = User.find_or_create_by!(email: "resident@test.com") do |user|
+resident = User.find_or_create_by!(email: "ammlopez04@gmail.com") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = :resident
   user.confirmed_at = Time.current
 end
-puts "✅ Created Resident: resident@test.com / password123"
+puts "✅ Created Resident: ammlopez04@gmail.com / password123"
 
 puts "\n" + "="*60
 puts "🎉 Seed data created successfully!"
 puts "="*60
 puts "\n📧 Test Accounts:"
-puts "   Admin:              admin@test.com / password123"
-puts "   Barangay Official:  official@test.com / password123 (Assigned to: #{barangays_created.first.name})"
-puts "   Resident:           resident@test.com / password123"
+puts "   Admin:              alea.mikaela04@gmail.com / password123"
+puts "   Barangay Official:  amlopez14@up.edu.ph / Captain2024! (Assigned to: #{barangays_created.first.name})"
+puts "   Resident:           ammlopez04@gmail.com / password123"
 puts "\n📊 Data Created:"
 puts "   Barangays:  #{Barangay.count}"
 puts "   Categories: #{Category.count}"
 puts "   Users:      #{User.count}"
 puts "\n💡 Next Steps:"
 puts "   1. Login with any test account above"
-puts "   2. Test creating reports as resident"
+puts "   2. Test creating reports as resident (ammlopez04@gmail.com)"
 puts "   3. Login as admin to create more captain accounts"
 puts "   4. Remaining #{16 - 1} barangays need captains (use admin UI)"
 puts "\n🎯 To Create More Captains:"
-puts "   • Login as admin@test.com"
+puts "   • Login as alea.mikaela04@gmail.com"
 puts "   • Go to Dashboard → 'Create Captain Account'"
 puts "   • Select barangay and enter email"
 puts "   • System auto-generates password"
+puts "\n📧 Email Testing:"
+puts "   • Create reports as resident → Emails sent to amlopez14@up.edu.ph"
+puts "   • Check Resend dashboard for email delivery"
+puts "   • All emails will be visible in Resend for testing"
 puts "="*60
