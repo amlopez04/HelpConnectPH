@@ -5,12 +5,16 @@ FactoryBot.define do
     address { Faker::Address.full_address }
     latitude { Faker::Address.latitude }
     longitude { Faker::Address.longitude }
-    status { :pending }
+    status { :pending_approval }
     priority { :medium }
 
     association :user
     association :barangay
     association :category
+
+    trait :pending_approval do
+      status { :pending_approval }
+    end
 
     trait :pending do
       status { :pending }

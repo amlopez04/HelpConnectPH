@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
   describe "validations" do
     it "is valid with valid attributes" do
-      user = build(:user)
+      barangay = create(:barangay)
+      user = build(:user, barangay: barangay)
       expect(user).to be_valid
     end
 
@@ -32,7 +33,8 @@ RSpec.describe User, type: :model do
     end
 
     it "defaults to resident role" do
-      user = create(:user)
+      barangay = create(:barangay)
+      user = create(:user, barangay: barangay)
       expect(user.resident?).to be true
     end
 
@@ -49,12 +51,13 @@ RSpec.describe User, type: :model do
     end
 
     it "can change roles" do
-      user = create(:user)
+      barangay = create(:barangay)
+      user = create(:user, barangay: barangay)
       expect(user.resident?).to be true
-
+      
       user.barangay_official!
       expect(user.barangay_official?).to be true
-
+      
       user.admin!
       expect(user.admin?).to be true
     end
@@ -67,9 +70,10 @@ RSpec.describe User, type: :model do
       expect(user.barangay).to eq(barangay)
     end
 
-    it "resident doesn't require a barangay" do
-      user = create(:user)
-      expect(user.barangay).to be_nil
+    it "resident requires a barangay" do
+      barangay = create(:barangay)
+      user = create(:user, barangay: barangay)
+      expect(user.barangay).to eq(barangay)
     end
   end
 

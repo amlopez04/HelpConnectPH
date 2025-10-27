@@ -5,6 +5,7 @@ FactoryBot.define do
     password_confirmation { "password123" }
     confirmed_at { Time.current }
     role { :resident }
+    association :barangay
 
     trait :barangay_official do
       role { :barangay_official }
@@ -12,6 +13,7 @@ FactoryBot.define do
 
     trait :admin do
       role { :admin }
+      barangay { nil }
     end
 
     trait :unconfirmed do

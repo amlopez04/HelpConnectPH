@@ -66,12 +66,12 @@ RSpec.describe Report, type: :model do
 
   describe "status enum" do
     it "defines status enum correctly" do
-      expect(Report.statuses.keys).to match_array([ "pending", "in_progress", "resolved", "closed" ])
+      expect(Report.statuses.keys).to match_array([ "pending_approval", "pending", "in_progress", "resolved", "closed", "reopen_requested" ])
     end
 
-    it "defaults to pending status" do
+    it "defaults to pending_approval status" do
       report = create(:report)
-      expect(report.pending?).to be true
+      expect(report.pending_approval?).to be true
     end
 
     it "can be in_progress" do
@@ -91,7 +91,7 @@ RSpec.describe Report, type: :model do
 
     it "can change status" do
       report = create(:report)
-      expect(report.pending?).to be true
+      expect(report.pending_approval?).to be true
 
       report.in_progress!
       expect(report.in_progress?).to be true
@@ -148,8 +148,8 @@ RSpec.describe Report, type: :model do
       expect(report.resolved_at).not_to be_nil
     end
 
-    it "doesn't have resolved_at when pending" do
-      report = create(:report, :pending)
+    it "doesn't have resolved_at when pending_approval" do
+      report = create(:report, :pending_approval)
       expect(report.resolved_at).to be_nil
     end
   end
