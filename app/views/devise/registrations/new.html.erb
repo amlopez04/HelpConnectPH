@@ -23,6 +23,12 @@
   </div>
 
   <div class="mb-6">
+    <%= f.label :barangay_id, "Barangay *", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= f.collection_select :barangay_id, Barangay.all, :id, :name, { prompt: "Select your barangay" }, { class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", required: true } %>
+    <p class="text-xs text-gray-500 mt-1">Required to prevent spam and ensure reports reach the correct barangay</p>
+  </div>
+
+  <div class="mb-6">
     <%= f.submit "Sign up", class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition font-semibold" %>
   </div>
 <% end %>

@@ -1,6 +1,6 @@
 class ReportsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_report, only: [:show, :edit, :update, :destroy, :approve, :reject]
+  before_action :set_report, only: [:show, :edit, :update, :destroy, :approve, :reject, :request_reopen, :approve_reopen]
   
   def index
     # Use Pundit policy scope to filter reports based on user role
@@ -9,6 +9,16 @@ class ReportsController < ApplicationController
     # Filter by status if provided
     if params[:status].present?
       @reports = @reports.where(status: params[:status])
+    end
+    
+    # Filter by category if provided
+    if params[:category_id].present?
+      @reports = @reports.where(category_id: params[:category_id])
+    end
+    
+    # Admin location filter: filter by barangay
+    if current_user&.admin? && params[:barangay_id].present?
+      @reports = @reports.where(barangay_id: params[:barangay_id])
     end
     
     @reports = @reports.order(created_at: :desc).page(params[:page]).per(10)
@@ -91,6 +101,36 @@ class ReportsController < ApplicationController
       redirect_to @report, notice: "Report rejected and closed."
     else
       redirect_to @report, alert: "Failed to reject report."
+    end
+  end
+
+  # Request to reopen closed report
+  def request_reopen
+    authorize @report
+    
+    if (@report.closed? || @report.resolved?) && @report.user == current_user
+      @report.update(status: :reopen_requested)
+      # Send email notification to admins
+      ReportMailer.reopen_request_notification(@report).deliver_now
+      flash[:notice] = "Request to reopen case has been submitted to admin for approval."
+      redirect_to @report
+    else
+      redirect_to @report, alert: "You can only request to reopen your own closed or resolved reports."
+    end
+  end
+
+  # Admin approve reopen request
+  def approve_reopen
+    authorize @report, :update?
+    
+    if @report.reopen_requested?
+      @report.update(status: :pending)
+      # Send email notification to report creator
+      ReportMailer.reopen_approved_notification(@report).deliver_now
+      flash[:notice] = "Report has been reopened and set to pending status."
+      redirect_to @report
+    else
+      redirect_to @report, alert: "This report is not awaiting reopen approval."
     end
   end
   

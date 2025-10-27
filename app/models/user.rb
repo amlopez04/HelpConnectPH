@@ -16,6 +16,9 @@ class User < ApplicationRecord
   after_update :send_welcome_email_if_confirmed
 
   # Validations
+  # Residents must select a barangay to prevent spam
+  validates :barangay_id, presence: true, if: :resident?
+  
   # Ensure only one barangay official (captain) per barangay
   validates :barangay_id, uniqueness: { 
     scope: :role, 

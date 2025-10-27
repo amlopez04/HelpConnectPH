@@ -11,6 +11,16 @@ class ApplicationController < ActionController::Base
   # Protect against CSRF attacks
   protect_from_forgery with: :exception
   
+  # Configure Devise parameters
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  
+  protected
+  
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:barangay_id])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:barangay_id])
+  end
+  
   private
   
   def user_not_authorized

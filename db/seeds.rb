@@ -63,49 +63,116 @@ admin = User.find_or_create_by!(email: "alea.mikaela04@gmail.com") do |user|
 end
 puts "✅ Created Admin: alea.mikaela04@gmail.com / password123"
 
-# Barangay Official User (assigned to first barangay)
-official = User.find_or_create_by!(email: "amlopez14@up.edu.ph") do |user|
+# Barangay Captain 1 - BF Homes
+bf_homes = barangays_created.find { |b| b.name == "Barangay BF Homes" }
+captain1 = User.find_or_create_by!(email: "amlopez14+bfhomes@up.edu.ph") do |user|
   user.password = "Captain2024!"
   user.password_confirmation = "Captain2024!"
   user.role = :barangay_official
-  user.barangay = barangays_created.first
+  user.barangay = bf_homes
   user.confirmed_at = Time.current
 end
-puts "✅ Created Barangay Official: amlopez14@up.edu.ph / Captain2024!"
-puts "   Assigned to: #{barangays_created.first.name}"
+puts "✅ Created Barangay Captain: amlopez14+bfhomes@up.edu.ph / Captain2024!"
+puts "   Assigned to: #{bf_homes.name}"
+
+# Barangay Captain 2 - San Isidro
+san_isidro = barangays_created.find { |b| b.name == "Barangay San Isidro" }
+captain2 = User.find_or_create_by!(email: "amlopez14+sanisidro@up.edu.ph") do |user|
+  user.password = "Captain2024!"
+  user.password_confirmation = "Captain2024!"
+  user.role = :barangay_official
+  user.barangay = san_isidro
+  user.confirmed_at = Time.current
+end
+puts "✅ Created Barangay Captain: amlopez14+sanisidro@up.edu.ph / Captain2024!"
+puts "   Assigned to: #{san_isidro.name}"
+
+# Barangay Captain 3 - San Dionisio
+san_dionisio = barangays_created.find { |b| b.name == "Barangay San Dionisio" }
+captain3 = User.find_or_create_by!(email: "amlopez14+sandionisio@up.edu.ph") do |user|
+  user.password = "Captain2024!"
+  user.password_confirmation = "Captain2024!"
+  user.role = :barangay_official
+  user.barangay = san_dionisio
+  user.confirmed_at = Time.current
+end
+puts "✅ Created Barangay Captain: amlopez14+sandionisio@up.edu.ph / Captain2024!"
+puts "   Assigned to: #{san_dionisio.name}"
 
 # Resident User
 resident = User.find_or_create_by!(email: "ammlopez04@gmail.com") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = :resident
+  user.barangay = san_isidro
   user.confirmed_at = Time.current
 end
 puts "✅ Created Resident: ammlopez04@gmail.com / password123"
+puts "   Assigned to: #{resident.barangay.name}"
+
+puts "\nCreating Test Reports (at least 2 per barangay)..."
+# Create test reports for each barangay
+barangays_created.each do |barangay|
+  report_titles = [
+    "Pothole on Main Street",
+    "Broken Streetlight",
+    "Clogged Drainage System",
+    "Damaged Sidewalk",
+    "Garbage Collection Issue",
+    "Fallen Tree Branch",
+    "Traffic Light Malfunction",
+    "Flooding in Residential Area"
+  ]
+  
+  # Create 2-4 reports per barangay
+  rand(2..4).times do
+    category = categories_created.sample
+    report = Report.create!(
+      title: report_titles.sample,
+      description: "Issue reported in #{barangay.name}. Needs attention from local authorities.",
+      address: barangay.address,
+      status: [:pending, :in_progress, :resolved, :closed].sample,
+      priority: [:low, :medium, :high].sample,
+      barangay: barangay,
+      category: category,
+      user: resident,
+      latitude: barangay.latitude,
+      longitude: barangay.longitude
+    )
+    puts "  Created report: #{report.title} in #{barangay.name}"
+  end
+end
+puts "Created #{Report.count} reports"
 
 puts "\n" + "="*60
 puts "🎉 Seed data created successfully!"
 puts "="*60
 puts "\n📧 Test Accounts:"
 puts "   Admin:              alea.mikaela04@gmail.com / password123"
-puts "   Barangay Official:  amlopez14@up.edu.ph / Captain2024! (Assigned to: #{barangays_created.first.name})"
-puts "   Resident:           ammlopez04@gmail.com / password123"
+puts "\n   Barangay Captains:"
+puts "   • amlopez14+bfhomes@up.edu.ph / Captain2024! (BF Homes)"
+puts "   • amlopez14+sanisidro@up.edu.ph / Captain2024! (San Isidro)"
+puts "   • amlopez14+sandionisio@up.edu.ph / Captain2024! (San Dionisio)"
+puts "\n   Resident:          ammlopez04@gmail.com / password123"
+puts "   New Sign Up:       mikaela080499@gmail.com (sign up with barangay)"
 puts "\n📊 Data Created:"
 puts "   Barangays:  #{Barangay.count}"
 puts "   Categories: #{Category.count}"
 puts "   Users:      #{User.count}"
+puts "   Captains:   #{User.barangay_official.count}"
+puts "   Reports:    #{Report.count}"
 puts "\n💡 Next Steps:"
 puts "   1. Login with any test account above"
-puts "   2. Test creating reports as resident (ammlopez04@gmail.com)"
+puts "   2. Test creating reports as resident"
 puts "   3. Login as admin to create more captain accounts"
-puts "   4. Remaining #{16 - 1} barangays need captains (use admin UI)"
+puts "   4. Remaining #{16 - 3} barangays need captains (use admin UI)"
 puts "\n🎯 To Create More Captains:"
 puts "   • Login as alea.mikaela04@gmail.com"
 puts "   • Go to Dashboard → 'Create Captain Account'"
 puts "   • Select barangay and enter email"
 puts "   • System auto-generates password"
 puts "\n📧 Email Testing:"
-puts "   • Create reports as resident → Emails sent to amlopez14@up.edu.ph"
+puts "   • Create reports as resident → Emails sent to barangay captains"
+puts "   • Reopen requests → Admin receives notification"
 puts "   • Check Resend dashboard for email delivery"
-puts "   • All emails will be visible in Resend for testing"
 puts "="*60

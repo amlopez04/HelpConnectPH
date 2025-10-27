@@ -68,6 +68,55 @@ class ReportMailer < Devise::Mailer
     )
   end
 
+  # Email sent to admins when a resident requests to reopen a closed report
+  def reopen_request_notification(report)
+    @report = report
+    
+    # Find all admin users
+    @admins = User.where(role: :admin)
+    
+    # Only send if there are admins
+    return unless @admins.any?
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/reopen_request_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report,
+        admins: @admins
+      }
+    )
+    
+    # Send to all admins
+    admin_emails = @admins.pluck(:email)
+    ResendHelper.send_email(
+      to: admin_emails,
+      subject: "Reopen Request: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
+    )
+  end
+
+  # Email sent to report creator when their reopen request is approved
+  def reopen_approved_notification(report)
+    @report = report
+    
+    # Render the email template with the mailer layout to preserve CSS styling
+    html_content = render_to_string(
+      template: 'report_mailer/reopen_approved_notification',
+      layout: 'mailer',
+      locals: { 
+        report: @report
+      }
+    )
+    
+    ResendHelper.send_email(
+      to: @report.user.email,
+      subject: "Report Reopened: #{@report.title} - #{@report.barangay.name}",
+      html: html_content
+    )
+  end
+
   # Email sent to barangay captain when a new report is created (after admin approval)
   def new_report_notification(report)
     @report = report
@@ -129,6 +178,9 @@ class ReportMailer < Devise::Mailer
     
     # Don't notify the report creator if they commented on their own report
     return if @commenter == @report.user
+    
+    # Don't notify if an official/admin commented (they have status change emails)
+    return if @commenter.barangay_official? || @commenter.admin?
     
     # Render the email template with the mailer layout to preserve CSS styling
     html_content = render_to_string(

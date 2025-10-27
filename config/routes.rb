@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    confirmations: 'users/confirmations'
+    confirmations: 'users/confirmations',
+    registrations: 'users/registrations'
   }
   
   # Email preview (development only)
@@ -34,6 +35,8 @@ Rails.application.routes.draw do
   delete '/reports/:id',      to: 'reports#destroy'
   post   '/reports/:id/approve', to: 'reports#approve', as: 'approve_report'
   post   '/reports/:id/reject',  to: 'reports#reject',  as: 'reject_report'
+  post   '/reports/:id/request_reopen', to: 'reports#request_reopen', as: 'request_reopen_report'
+  post   '/reports/:id/approve_reopen', to: 'reports#approve_reopen', as: 'approve_reopen_report'
   
   # ============================================
   # COMMENTS (Nested under reports)

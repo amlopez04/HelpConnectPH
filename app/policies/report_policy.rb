@@ -76,5 +76,12 @@ class ReportPolicy < ApplicationPolicy
     
     false
   end
+  
+  def request_reopen?
+    return false unless user.present?
+    
+    # Only residents can request to reopen their own closed or resolved reports
+    user.resident? && record.user == user && (record.closed? || record.resolved?)
+  end
 end
 

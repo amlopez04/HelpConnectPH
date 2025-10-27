@@ -1,27 +1,52 @@
 <!-- Header -->
-<div class="mb-6 flex justify-between items-center">
-  <div>
-    <h1 class="text-3xl font-bold text-gray-900">Community Reports</h1>
-    <p class="text-gray-600 mt-2">View and track community issues reported by residents.</p>
+<div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+  <div class="flex-1">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Community Reports</h1>
+    <p class="text-gray-600 mt-2 text-sm sm:text-base">View and track community issues reported by residents.</p>
   </div>
   <% if user_signed_in? && current_user.resident? %>
-    <%= link_to new_report_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
-      <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+    <%= link_to new_report_path, class: "bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center text-sm sm:text-base" do %>
+      <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
       </svg>
-      New Report
+      <span class="hidden sm:inline">New Report</span>
+      <span class="sm:hidden">New</span>
     <% end %>
   <% end %>
 </div>
 
 <!-- Filters -->
 <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-  <div class="flex flex-wrap gap-2">
+  <div class="flex flex-wrap gap-2 mb-4">
     <%= link_to "All", reports_path, class: "px-4 py-2 rounded-lg font-semibold #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Pending", reports_path(status: 'pending'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "In Progress", reports_path(status: 'in_progress'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'in_progress' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Resolved", reports_path(status: 'resolved'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'resolved' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Pending", reports_path(status: 'pending'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "In Progress", reports_path(status: 'in_progress'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'in_progress' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Resolved", reports_path(status: 'resolved'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'resolved' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Closed", reports_path(status: 'closed'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'closed' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Reopen Requested", reports_path(status: 'reopen_requested'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'reopen_requested' ? 'bg-pink-200 text-pink-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
   </div>
+  
+  <!-- Admin Location Filter -->
+  <% if current_user&.admin? %>
+    <%= form_with url: reports_path, method: :get, local: true, class: "flex flex-wrap gap-2 items-end" do |f| %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <div>
+        <%= f.label :barangay_id, "Filter by Barangay:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.collection_select :barangay_id, Barangay.all, :id, :name, 
+            { prompt: "Select Barangay", selected: params[:barangay_id] }, 
+            { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+      </div>
+      <div>
+        <%= f.submit "Filter", class: "bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+      </div>
+    <% end %>
+    
+    <% if params[:barangay_id].present? %>
+      <div class="mt-2 text-sm text-gray-600">
+        Showing reports for <%= Barangay.find(params[:barangay_id]).name %>
+      </div>
+    <% end %>
+  <% end %>
 </div>
 
 <!-- Reports List -->
@@ -53,7 +78,7 @@
             <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
               📍 <%= report.barangay.name %>
             </span>
-            <span class="<%= report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">
+            <span class="<%= report.pending_approval? ? 'bg-purple-100 text-purple-800' : report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : report.closed? ? 'bg-gray-100 text-gray-800' : 'bg-pink-100 text-pink-800' %> px-3 py-1 rounded-full text-sm font-semibold">
               <%= report.status.titleize %>
             </span>
             <span class="<%= report.critical? ? 'bg-red-100 text-red-800' : report.high? ? 'bg-orange-100 text-orange-800' : report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">

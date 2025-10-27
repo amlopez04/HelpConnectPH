@@ -1,47 +1,44 @@
 <nav class="bg-gradient-to-r from-blue-600 to-blue-700 shadow-xl">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
+  <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+    <div class="flex justify-between items-center h-16">
       <!-- Logo/Brand -->
-      <div class="flex items-center">
-        <%= link_to root_path, class: "text-white text-2xl font-bold hover:text-blue-100 transition-all duration-300 flex items-center transform hover:scale-105" do %>
-          <svg class="w-8 h-8 mr-2" fill="currentColor" viewBox="0 0 24 24">
+      <div class="flex-shrink-0 flex items-center min-w-0">
+        <%= link_to root_path, class: "text-white text-lg sm:text-2xl font-bold hover:text-blue-100 transition-all duration-300 flex items-center transform hover:scale-105 whitespace-nowrap overflow-hidden" do %>
+          <svg class="w-6 h-6 sm:w-8 sm:h-8 mr-1 sm:mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
           </svg>
-          ParañaqueConnect
+          <span class="truncate hidden sm:inline">ParañaqueConnect</span>
         <% end %>
       </div>
       
       <!-- Navigation Links -->
-      <div class="flex items-center space-x-2 md:space-x-4">
+      <div class="flex items-center flex-nowrap gap-1 sm:gap-2 md:gap-2">
         <% if user_signed_in? %>
           <!-- Logged In Navigation -->
-          <%= link_to "Dashboard", dashboard_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
-          <%= link_to "Reports", reports_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
+          <%= link_to "Dashboard", dashboard_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md whitespace-nowrap" %>
+          <%= link_to "Reports", reports_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md whitespace-nowrap" %>
           
           <% if current_user.admin? %>
-            <%= link_to "Categories", categories_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
-            <%= link_to "Barangays", barangays_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
-          <% elsif current_user.resident? %>
-            <%= link_to "Categories", categories_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
-            <%= link_to "Barangays", barangays_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md" %>
+            <%= link_to "Categories", categories_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md whitespace-nowrap hidden lg:block" %>
+            <%= link_to "Barangays", barangays_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md whitespace-nowrap hidden lg:block" %>
           <% end %>
           
           <!-- User Menu -->
-          <div class="flex items-center space-x-2">
-            <%= link_to edit_user_registration_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md flex items-center" do %>
-              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-1 sm:gap-2">
+            <%= link_to edit_user_registration_path, class: "text-white hover:text-blue-100 px-2 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-blue-500 hover:shadow-md flex items-center whitespace-nowrap" do %>
+              <svg class="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
               </svg>
-              Profile
+              <span class="hidden md:inline">Profile</span>
             <% end %>
-            <span class="text-white text-sm"><%= current_user.email %></span>
-            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-800 hover:to-blue-900 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" %>
+            <span class="text-white text-xs sm:text-sm hidden md:inline truncate max-w-[80px] sm:max-w-none"><%= current_user.email %></span>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "bg-gradient-to-r from-blue-700 to-blue-800 text-white px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:from-blue-800 hover:to-blue-900 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 whitespace-nowrap" %>
           </div>
         <% else %>
           <!-- Not Logged In Navigation -->
-          <%= link_to "Home", root_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition" %>
-          <%= link_to "Log In", new_user_session_path, class: "text-white hover:text-blue-100 px-3 py-2 rounded-md text-sm font-medium transition" %>
-          <%= link_to "Sign Up", new_user_registration_path, class: "bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100 transition" %>
+          <%= link_to "Home", root_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition whitespace-nowrap" %>
+          <%= link_to "Log In", new_user_session_path, class: "text-white hover:text-blue-100 px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition whitespace-nowrap" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "bg-white text-blue-600 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-gray-100 transition whitespace-nowrap" %>
         <% end %>
       </div>
     </div>

@@ -14,7 +14,7 @@ class Report < ApplicationRecord
   validates :address, presence: true
   
   # Enums
-  enum :status, { pending_approval: 0, pending: 1, in_progress: 2, resolved: 3, closed: 4 }, default: :pending_approval
+  enum :status, { pending_approval: 0, pending: 1, in_progress: 2, resolved: 3, closed: 4, reopen_requested: 5 }, default: :pending_approval
   enum :priority, { low: 0, medium: 1, high: 2, critical: 3 }, default: :medium
   
   # Geocoding
