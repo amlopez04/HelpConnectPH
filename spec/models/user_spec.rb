@@ -54,10 +54,10 @@ RSpec.describe User, type: :model do
       barangay = create(:barangay)
       user = create(:user, barangay: barangay)
       expect(user.resident?).to be true
-      
+
       user.barangay_official!
       expect(user.barangay_official?).to be true
-      
+
       user.admin!
       expect(user.admin?).to be true
     end
