@@ -33,13 +33,11 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
-# Ignore personal development notes and testing guides
-DEVELOPMENT_STEPS.md
-GOOGLE_MAPS_GUIDE.md
-RENDER_DEPLOYMENT.md
-# Ignore all documentation files and docs folder
-docs/
+# Ignore all markdown files (except README.md which should be tracked)
 *.md
+!README.md
+# Ignore docs folder
+docs/
 
 /app/assets/builds/*
 !/app/assets/builds/.keep

@@ -28,7 +28,7 @@ RSpec.describe User, type: :model do
 
   describe "roles" do
     it "defines role enum correctly" do
-      expect(User.roles.keys).to match_array(["resident", "barangay_official", "admin"])
+      expect(User.roles.keys).to match_array([ "resident", "barangay_official", "admin" ])
     end
 
     it "defaults to resident role" do
@@ -51,10 +51,10 @@ RSpec.describe User, type: :model do
     it "can change roles" do
       user = create(:user)
       expect(user.resident?).to be true
-      
+
       user.barangay_official!
       expect(user.barangay_official?).to be true
-      
+
       user.admin!
       expect(user.admin?).to be true
     end
@@ -91,4 +91,3 @@ RSpec.describe User, type: :model do
     end
   end
 end
-

@@ -4,19 +4,19 @@ class Report < ApplicationRecord
   belongs_to :barangay
   belongs_to :category
   has_many :comments, dependent: :destroy
-  
+
   # Active Storage - Photo attachments
   has_many_attached :photos
-  
+
   # Validations
   validates :title, presence: true
   validates :description, presence: true
   validates :address, presence: true
-  
+
   # Enums
   enum :status, { pending_approval: 0, pending: 1, in_progress: 2, resolved: 3, closed: 4, reopen_requested: 5 }, default: :pending_approval
   enum :priority, { low: 0, medium: 1, high: 2, critical: 3 }, default: :medium
-  
+
   # Geocoding
   geocoded_by :address
   after_validation :geocode, if: :should_geocode?
@@ -29,13 +29,13 @@ class Report < ApplicationRecord
   # Check for potential duplicate reports
   def potential_duplicates
     return [] unless latitude.present? && longitude.present?
-    
+
     # Find reports within 100 meters of this report's location
     # that are in the same category and barangay
     Report.where.not(id: id)
           .where(category: category, barangay: barangay)
-          .where(status: [:pending, :in_progress])
-          .near([latitude, longitude], 0.1) # 0.1 km = 100 meters
+          .where(status: [ :pending, :in_progress ])
+          .near([ latitude, longitude ], 0.1) # 0.1 km = 100 meters
           .limit(5)
   end
 
@@ -44,7 +44,7 @@ class Report < ApplicationRecord
     # Check for suspicious patterns
     user_reports_today = user.reports.where(created_at: 1.day.ago..Time.current).count
     user_reports_this_week = user.reports.where(created_at: 1.week.ago..Time.current).count
-    
+
     # Flag as potential spam if:
     # - More than 5 reports today
     # - More than 20 reports this week

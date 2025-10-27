@@ -36,12 +36,11 @@ RSpec.describe Category, type: :model do
 
   describe "scopes or methods" do
     it "orders by name alphabetically by default" do
-      
       category_c = create(:category, name: "Zebra")
       category_a = create(:category, name: "Apple")
       category_b = create(:category, name: "Mango")
-      
-      expect(Category.all.pluck(:name)).to eq(["Apple", "Mango", "Zebra"])
+
+      expect(Category.all.pluck(:name)).to eq([ "Apple", "Mango", "Zebra" ])
     end
 
     it "normalizes name to title case" do
@@ -50,4 +49,3 @@ RSpec.describe Category, type: :model do
     end
   end
 end
-

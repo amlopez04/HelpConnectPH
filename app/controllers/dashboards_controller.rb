@@ -1,14 +1,14 @@
 class DashboardsController < ApplicationController
   before_action :authenticate_user!
-  
+
   def show
     case current_user.role
-    when 'resident'
+    when "resident"
       @my_reports = current_user.reports.order(created_at: :desc).limit(5)
       # Residents can see all community reports (using policy scope)
       @recent_reports = policy_scope(Report).includes(:user, :category, :barangay).order(created_at: :desc).limit(10)
       render :resident
-    when 'barangay_official'
+    when "barangay_official"
       if current_user.barangay
         @barangay = current_user.barangay
         # Barangay officials only see reports from their barangay (using policy scope)
@@ -17,7 +17,7 @@ class DashboardsController < ApplicationController
         @resolved_reports = policy_scope(Report).resolved.count
       end
       render :barangay_official
-    when 'admin'
+    when "admin"
       # Admins see all reports (policy scope returns all for admins)
       @total_reports = Report.count
       @pending_reports = Report.pending.count
@@ -26,11 +26,10 @@ class DashboardsController < ApplicationController
       @total_barangays = Barangay.count
       @total_categories = Category.count
       @recent_reports = policy_scope(Report).includes(:user, :category, :barangay).order(created_at: :desc).limit(10)
-      
+
       render :admin
     else
       redirect_to root_path, alert: "Invalid user role"
     end
   end
 end
-

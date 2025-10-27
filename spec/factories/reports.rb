@@ -7,7 +7,7 @@ FactoryBot.define do
     longitude { Faker::Address.longitude }
     status { :pending }
     priority { :medium }
-    
+
     association :user
     association :barangay
     association :category
@@ -46,4 +46,3 @@ FactoryBot.define do
     end
   end
 end
-

@@ -66,7 +66,7 @@ RSpec.describe Report, type: :model do
 
   describe "status enum" do
     it "defines status enum correctly" do
-      expect(Report.statuses.keys).to match_array(["pending", "in_progress", "resolved", "closed"])
+      expect(Report.statuses.keys).to match_array([ "pending", "in_progress", "resolved", "closed" ])
     end
 
     it "defaults to pending status" do
@@ -92,13 +92,13 @@ RSpec.describe Report, type: :model do
     it "can change status" do
       report = create(:report)
       expect(report.pending?).to be true
-      
+
       report.in_progress!
       expect(report.in_progress?).to be true
-      
+
       report.resolved!
       expect(report.resolved?).to be true
-      
+
       report.closed!
       expect(report.closed?).to be true
     end
@@ -106,7 +106,7 @@ RSpec.describe Report, type: :model do
 
   describe "priority enum" do
     it "defines priority enum correctly" do
-      expect(Report.priorities.keys).to match_array(["low", "medium", "high", "critical"])
+      expect(Report.priorities.keys).to match_array([ "low", "medium", "high", "critical" ])
     end
 
     it "defaults to medium priority" do
@@ -174,11 +174,10 @@ RSpec.describe Report, type: :model do
         filename: "test2.jpg",
         content_type: "image/jpeg"
       )
-      
+
       expect(report.photos.count).to eq(2)
       expect(report.photos.first.filename.to_s).to eq("test1.jpg")
       expect(report.photos.second.filename.to_s).to eq("test2.jpg")
     end
   end
 end
-

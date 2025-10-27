@@ -9,4 +9,3 @@ FactoryBot.define do
     contact_email { Faker::Internet.email }
   end
 end
-

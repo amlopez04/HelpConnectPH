@@ -52,8 +52,8 @@ RSpec.describe Comment, type: :model do
       comment3 = create(:comment, report: report, created_at: 3.hours.ago)
       comment1 = create(:comment, report: report, created_at: 5.hours.ago)
       comment2 = create(:comment, report: report, created_at: 4.hours.ago)
-      
-      expect(Comment.all).to eq([comment1, comment2, comment3])
+
+      expect(Comment.all).to eq([ comment1, comment2, comment3 ])
     end
   end
 
@@ -69,4 +69,3 @@ RSpec.describe Comment, type: :model do
     end
   end
 end
-

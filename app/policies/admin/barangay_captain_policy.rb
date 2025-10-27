@@ -7,4 +7,3 @@ class Admin::BarangayCaptainPolicy < ApplicationPolicy
     user.admin?
   end
 end
-

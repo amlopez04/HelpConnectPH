@@ -39,12 +39,12 @@ Rails.application.configure do
 
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
-  
+
   # Use Resend for email delivery
   config.action_mailer.delivery_method = :resend
   config.action_mailer.perform_deliveries = true
   config.action_mailer.resend_settings = {
-    api_key: ENV['RESEND_API_KEY']
+    api_key: ENV["RESEND_API_KEY"]
   }
 
   # Print deprecation notices to the Rails logger.

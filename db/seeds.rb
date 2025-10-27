@@ -88,7 +88,7 @@ unless Rails.env.test?
     # Simplify barangay name for email
     barangay_key = barangay.name.gsub("Barangay ", "").downcase.gsub(" ", "").gsub("deporres", "de-porres")
     email = "amlopez14+#{barangay_key}@up.edu.ph"
-    
+
     official = User.find_or_create_by!(email: email) do |user|
       user.password = "Captain2024!"
       user.password_confirmation = "Captain2024!"
@@ -97,10 +97,10 @@ unless Rails.env.test?
       user.confirmed_at = Time.current
     end
     officials_created << official
-    
+
     # Update barangay contact_email to match official's email
     barangay.update(contact_email: email)
-    
+
     puts "  ✅ Official: #{email} (assigned to #{barangay.name})"
   end
 
@@ -118,7 +118,7 @@ unless Rails.env.test?
       "Traffic Light Malfunction",
       "Flooding in Residential Area"
     ]
-    
+
     # Create 2-4 reports per barangay
     rand(2..4).times do
       category = categories_created.sample
@@ -126,8 +126,8 @@ unless Rails.env.test?
         title: report_titles.sample,
         description: "Issue reported in #{barangay.name}. Needs attention from local authorities.",
         address: barangay.address,
-        status: [:pending, :in_progress, :resolved, :closed].sample,
-        priority: [:low, :medium, :high].sample,
+        status: [ :pending, :in_progress, :resolved, :closed ].sample,
+        priority: [ :low, :medium, :high ].sample,
         barangay: barangay,
         category: category,
         user: resident,

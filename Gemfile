@@ -70,7 +70,7 @@ group :development, :test do
 
   # Environment variables management
   gem "dotenv-rails"
-  
+
   # RSpec for testing
   gem "rspec-rails", "~> 6.1.0"
   gem "factory_bot_rails"  # Test data factories
@@ -80,7 +80,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  
+
   # Preview emails in browser via web interface
   gem "letter_opener_web"
 end
@@ -89,9 +89,8 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  
+
   # Test helpers
   gem "shoulda-matchers", "~> 6.0"  # Simplifies testing Rails functionality
   gem "database_cleaner-active_record"  # Clean database between tests
 end
-

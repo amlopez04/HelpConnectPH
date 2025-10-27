@@ -46,4 +46,3 @@ RSpec.describe Barangay, type: :model do
     # end
   end
 end
-

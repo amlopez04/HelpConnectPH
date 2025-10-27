@@ -63,7 +63,7 @@ Rails.application.configure do
   # Use Resend for email delivery in production
   config.action_mailer.delivery_method = :resend
   config.action_mailer.resend_settings = {
-    api_key: ENV['RESEND_API_KEY']
+    api_key: ENV["RESEND_API_KEY"]
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
