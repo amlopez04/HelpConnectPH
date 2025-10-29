@@ -331,7 +331,7 @@ GEM
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
-    resend (0.26.0)
+    resend (0.27.0)
       httparty (>= 0.21.0)
     responders (3.2.0)
       actionpack (>= 7.0)
