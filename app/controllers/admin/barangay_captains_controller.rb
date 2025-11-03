@@ -11,7 +11,7 @@ class Admin::BarangayCaptainsController < ApplicationController
     end
 
     @barangay = Barangay.find_by(id: params[:barangay_id])
-    
+
     # Check if barangay exists
     unless @barangay
       redirect_to barangays_path, alert: "Barangay not found."

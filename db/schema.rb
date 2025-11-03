@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_090000) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_03_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,6 +88,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_090000) do
     t.datetime "updated_at", null: false
     t.index ["barangay_id"], name: "index_reports_on_barangay_id"
     t.index ["category_id"], name: "index_reports_on_category_id"
+    t.index ["created_at"], name: "index_reports_on_created_at"
+    t.index ["status"], name: "index_reports_on_status"
     t.index ["user_id"], name: "index_reports_on_user_id"
   end
 
@@ -113,6 +115,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_090000) do
     t.index ["banned_at"], name: "index_users_on_banned_at"
     t.index ["barangay_id"], name: "index_users_on_barangay_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["created_at"], name: "index_users_on_created_at"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true, where: "(phone_number IS NOT NULL)"

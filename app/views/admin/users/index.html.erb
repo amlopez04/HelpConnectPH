@@ -87,8 +87,9 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <% @users.each do |user| %>
-          <tr class="<%= 'bg-red-50/40' if user.banned_at.present? %><%= 'bg-gray-50/60' if user.deleted_at.present? %>">
+              <% @users.each do |user| %>
+                <% cache [user, user.updated_at, user.banned_at, user.deleted_at] do %>
+                <tr class="<%= 'bg-red-50/40' if user.banned_at.present? %><%= 'bg-gray-50/60' if user.deleted_at.present? %>">
             <td class="px-4 py-2 whitespace-nowrap align-top">
               <div class="font-medium text-gray-900 leading-tight truncate max-w-[220px]"><%= link_to user.email, admin_user_path(user), class: "text-blue-600 hover:text-blue-800" %></div>
               <% if user.banned_at.present? && user.ban_reason.present? %>
@@ -129,7 +130,8 @@
                 <% end %>
               </div>
             </td>
-          </tr>
+                </tr>
+                <% end %>
         <% end %>
       </tbody>
     </table>

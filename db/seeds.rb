@@ -28,8 +28,8 @@ unless Rails.env.test?
   def safe_coords_for(barangay)
     lat = barangay.latitude&.to_f
     lng = barangay.longitude&.to_f
-    return [CENTER_LAT, CENTER_LNG] unless within_paranaque_bounds?(lat, lng)
-    [lat, lng]
+    return [ CENTER_LAT, CENTER_LNG ] unless within_paranaque_bounds?(lat, lng)
+    [ lat, lng ]
   end
 
   # Clear existing data
@@ -147,7 +147,7 @@ unless Rails.env.test?
       user.confirmed_at = Time.current
       user.phone_number = "+63912345678#{i}"
     end
-    
+
     # Create spam reports (many reports in short time) including gibberish text
     if spam_user.persisted?
       gibberish_samples = [
@@ -233,7 +233,7 @@ unless Rails.env.test?
 
   # Sample Reopen Requested reports
   puts "\nCreating sample 'Reopen Requested' reports..."
-  [0, 1].each do |idx|
+  [ 0, 1 ].each do |idx|
     resident = residents_created[idx]
     next unless resident
     barangay = resident.barangay

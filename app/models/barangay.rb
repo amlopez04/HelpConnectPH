@@ -10,7 +10,7 @@ class Barangay < ApplicationRecord
   # Geocoding
   geocoded_by :address
   after_validation :geocode, if: :address_changed?
-  
+
   # Handle geocoding errors gracefully
   def geocode
     super

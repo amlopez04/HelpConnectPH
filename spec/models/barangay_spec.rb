@@ -38,5 +38,4 @@ RSpec.describe Barangay, type: :model do
       expect(barangay.longitude).not_to be_nil
     end
   end
-
 end

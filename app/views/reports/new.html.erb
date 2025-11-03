@@ -1,3 +1,7 @@
+<% content_for :google_maps_script do %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places&callback=Function.prototype" async defer></script>
+<% end %>
+
 <div class="max-w-4xl mx-auto">
   <!-- Header -->
   <div class="mb-8">

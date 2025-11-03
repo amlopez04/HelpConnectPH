@@ -12,7 +12,7 @@ class NormalizePhoneNumbersAndUniqueIndexOnUsers < ActiveRecord::Migration[7.1]
 
     say_with_time 'Normalizing existing phone numbers to +63 format' do
       MigrationUser.reset_column_information
-      MigrationUser.where.not(phone_number: [nil, '']).find_each do |u|
+      MigrationUser.where.not(phone_number: [ nil, '' ]).find_each do |u|
         normalized = normalize(u.phone_number)
         next if normalized.blank?
         # Use update_columns to skip validations/callbacks
@@ -22,7 +22,7 @@ class NormalizePhoneNumbersAndUniqueIndexOnUsers < ActiveRecord::Migration[7.1]
 
     # De-duplicate numbers by keeping the earliest user id and nulling the rest
     say_with_time 'De-duplicating normalized phone numbers' do
-      dup_numbers = MigrationUser.where.not(phone_number: [nil, ''])
+      dup_numbers = MigrationUser.where.not(phone_number: [ nil, '' ])
                                  .group(:phone_number)
                                  .having('COUNT(*) > 1')
                                  .pluck(:phone_number)
@@ -54,5 +54,3 @@ class NormalizePhoneNumbersAndUniqueIndexOnUsers < ActiveRecord::Migration[7.1]
     value
   end
 end
-
-

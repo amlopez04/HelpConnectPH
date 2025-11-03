@@ -18,8 +18,8 @@ class User < ApplicationRecord
 
   # Validations
   VALID_PH_PHONE_REGEX = /\A(\+?63|0)9\d{9}\z/
-  validates :phone_number, 
-            format: { with: VALID_PH_PHONE_REGEX, message: "must be a valid PH mobile (e.g., 09XXXXXXXXX or +639XXXXXXXXX)" }, 
+  validates :phone_number,
+            format: { with: VALID_PH_PHONE_REGEX, message: "must be a valid PH mobile (e.g., 09XXXXXXXXX or +639XXXXXXXXX)" },
             allow_blank: true
   validates :phone_number, uniqueness: { case_sensitive: false }, allow_nil: true
 

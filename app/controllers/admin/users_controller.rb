@@ -11,12 +11,12 @@ class Admin::UsersController < ApplicationController
 
     # Status filter: active, banned, deleted
     case params[:status]
-    when 'active'
+    when "active"
       @users = @users.where(banned_at: nil, deleted_at: nil)
-    when 'banned'
+    when "banned"
       # Show only users who are currently banned (not deleted)
       @users = @users.where.not(banned_at: nil).where(deleted_at: nil)
-    when 'deleted'
+    when "deleted"
       # Show only users who are deleted; exclude banned to avoid overlap in filters
       @users = @users.where.not(deleted_at: nil).where(banned_at: nil)
     end
@@ -39,7 +39,7 @@ class Admin::UsersController < ApplicationController
 
     # Ordered list for display
     @reports = @user.reports.includes(:category, :barangay).order(created_at: :desc)
-    @total_reports = @reports.count
+    @total_reports = @reports.size # Use .size for already-loaded relation
     # Separate grouped query without ORDER BY to avoid PG grouping error
     @status_counts = @user.reports.group(:status).count
 

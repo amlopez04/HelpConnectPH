@@ -4,7 +4,10 @@ class ReportsController < ApplicationController
 
   def index
     # Use Pundit policy scope to filter reports based on user role
-    @reports = policy_scope(Report).includes(:user, :barangay, :category)
+    # Eager-load everything rendered on index to avoid N+1 including thumbnails
+    @reports = policy_scope(Report)
+      .includes(:user, :barangay, :category)
+      .with_attached_photos
 
     # Resident "My Reports" filter
     if current_user&.resident? && params[:my_reports] == "true"
@@ -51,7 +54,9 @@ class ReportsController < ApplicationController
 
   def show
     authorize @report
-    @report.comments.includes(:user).reload # Ensure comments with users are loaded
+    # Eager load comments with users to avoid N+1
+    @report.comments.includes(:user)
+    # Photos are already loaded via Active Storage associations
   end
 
   def new

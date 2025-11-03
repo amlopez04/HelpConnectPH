@@ -16,11 +16,11 @@
   <div class="grid md:grid-cols-4 gap-6 mb-6">
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="text-sm text-gray-600 mb-1">Total Reports</div>
-      <div class="text-3xl font-bold text-blue-600"><%= @pending_reports.count + @in_progress_reports + @resolved_reports %></div>
+      <div class="text-3xl font-bold text-blue-600"><%= @pending_reports.size + @in_progress_reports + @resolved_reports %></div>
     </div>
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="text-sm text-gray-600 mb-1">Pending</div>
-      <div class="text-3xl font-bold text-yellow-600"><%= @pending_reports.count %></div>
+      <div class="text-3xl font-bold text-yellow-600"><%= @pending_reports.size %></div>
     </div>
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="text-sm text-gray-600 mb-1">In Progress</div>
@@ -50,7 +50,7 @@
   <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold text-gray-900">Pending Reports</h2>
-      <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-semibold"><%= @pending_reports.count %> Pending</span>
+      <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-semibold"><%= @pending_reports.size %> Pending</span>
     </div>
     
     <% if @pending_reports.any? %>

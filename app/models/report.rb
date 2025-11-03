@@ -22,7 +22,7 @@ class Report < ApplicationRecord
   # Geocoding
   geocoded_by :address
   after_validation :geocode, if: :should_geocode?
-  
+
   # Handle geocoding errors gracefully
   def geocode
     super
@@ -57,10 +57,10 @@ class Report < ApplicationRecord
 
     # Whitelist shared territories (approximate centers and radii in meters)
     whitelist = [
-      { name: 'NAIA Complex',      lat: 14.5108, lng: 121.0196, radius_m: 1500 },
-      { name: 'Okada Manila',      lat: 14.5157, lng: 120.9845, radius_m: 600  },
-      { name: 'Parqal',            lat: 14.5146, lng: 120.9924, radius_m: 400  },
-      { name: 'Ayala Malls Manila Bay', lat: 14.5171, lng: 120.9916, radius_m: 450 }
+      { name: "NAIA Complex",      lat: 14.5108, lng: 121.0196, radius_m: 1500 },
+      { name: "Okada Manila",      lat: 14.5157, lng: 120.9845, radius_m: 600  },
+      { name: "Parqal",            lat: 14.5146, lng: 120.9924, radius_m: 400  },
+      { name: "Ayala Malls Manila Bay", lat: 14.5171, lng: 120.9916, radius_m: 450 }
     ]
 
     if whitelist.any? { |z| haversine_m(lat, lng, z[:lat], z[:lng]) <= z[:radius_m] }
@@ -117,30 +117,30 @@ class Report < ApplicationRecord
   # Check if text appears to be random gibberish
   def random_gibberish?(text)
     return false if text.blank?
-    
+
     # Remove whitespace and convert to lowercase for analysis
-    cleaned = text.downcase.gsub(/\s+/, '')
+    cleaned = text.downcase.gsub(/\s+/, "")
     return false if cleaned.length < 10 # Too short to analyze
-    
+
     # Count vowels vs consonants
-    vowels = cleaned.count('aeiou')
-    consonants = cleaned.count('bcdfghjklmnpqrstvwxyz')
+    vowels = cleaned.count("aeiou")
+    consonants = cleaned.count("bcdfghjklmnpqrstvwxyz")
     total_letters = vowels + consonants
-    
+
     return false if total_letters == 0
-    
+
     # Random gibberish typically has:
     # - Low vowel-to-consonant ratio (below 30% vowels)
     # - High consonant-to-vowel ratio
     vowel_ratio = vowels.to_f / total_letters
-    
+
     # Check for repetitive patterns (like "abcabc" or "aaaa")
     has_repetitive_pattern = text.scan(/(.)\1{3,}/).any? # Same character repeated 4+ times
-    
+
     # Check if text has very few spaces relative to length (random text usually lacks structure)
-    space_count = text.count(' ')
+    space_count = text.count(" ")
     avg_word_length = space_count > 0 ? text.length.to_f / (space_count + 1) : text.length
-    
+
     # Flag as random gibberish if:
     # 1. Very low vowel ratio (< 20% vowels is suspicious)
     # 2. Has repetitive character patterns

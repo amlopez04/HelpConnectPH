@@ -8,5 +8,3 @@ class AddSoftDeleteAndBanToUsers < ActiveRecord::Migration[7.1]
     add_index :users, :deleted_at
   end
 end
-
-
