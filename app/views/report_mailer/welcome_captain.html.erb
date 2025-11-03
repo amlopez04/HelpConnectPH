@@ -9,7 +9,20 @@
   <p><strong>Assigned Barangay:</strong> <%= @barangay.name %></p>
   <p><strong>Address:</strong> <%= @barangay.address %></p>
   <p><strong>Email:</strong> <%= @captain.email %></p>
-  <p><strong>Default Password:</strong> Captain2024!</p>
+  <p><strong>Password:</strong> A secure temporary password has been generated for your account</p>
+</div>
+
+<div style="background-color: #fef3c7; padding: 20px; border-radius: 6px; border-left: 4px solid #f59e0b; margin: 30px 0;">
+  <h4 style="margin-top: 0; color: #92400e;">🔒 Security First!</h4>
+  <p style="margin: 0 0 15px 0; color: #92400e;">
+    <strong>Your account was created with a temporary password. For security, please change it immediately.</strong>
+  </p>
+  <div style="text-align: center; margin-top: 15px;">
+    <a href="<%= edit_user_password_url(@captain, reset_password_token: @reset_token, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" 
+       style="display: inline-block; background-color: #f59e0b; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+      🔑 Change Password Now
+    </a>
+  </div>
 </div>
 
 <h3>What You Can Do:</h3>
@@ -20,14 +33,13 @@
   <li><strong>Track Progress:</strong> Monitor all issues in your barangay</li>
 </ul>
 
-<h3>Important Security Steps:</h3>
-<ol>
-  <li><strong>Change Your Password:</strong> Use a strong, unique password</li>
-  <li><strong>Keep Credentials Secure:</strong> Don't share your login details</li>
-  <li><strong>Log Out:</strong> Always log out when finished</li>
-</ol>
-
-<%= link_to "Login to Your Account", root_url, class: "button" %>
+<div style="text-align: center; margin: 30px 0;">
+  <a href="<%= root_url(host: Rails.application.config.action_mailer.default_url_options[:host]) %>" 
+     class="button" 
+     style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 15px 0;">
+    Login to Your Account
+  </a>
+</div>
 
 <div style="background-color: #dbeafe; padding: 20px; border-radius: 6px; border-left: 4px solid #3b82f6; margin: 30px 0;">
   <h4 style="margin-top: 0; color: #1e40af;">Need Help?</h4>

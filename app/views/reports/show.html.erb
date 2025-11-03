@@ -7,26 +7,29 @@
 
 <!-- Report Card -->
 <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-  <!-- Header -->
-  <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white">
-    <h1 class="text-3xl font-bold mb-2"><%= @report.title %></h1>
-    <div class="flex items-center text-blue-100">
-      <span>Reported by <%= @report.user.email %></span>
-      <span class="mx-2">•</span>
-      <span><%= @report.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-8 py-4 sm:py-6 text-white">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 leading-tight"><%= @report.title %></h1>
+      <div class="flex items-center text-blue-100">
+        <span><%= @report.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+      </div>
     </div>
-  </div>
 
   <!-- Content -->
-  <div class="p-8">
+  <div class="p-4 sm:p-8">
     <!-- Status & Priority Badges -->
     <div class="flex flex-wrap gap-3 mb-6">
+      <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold">
+        🏷️ <%= @report.category.name %>
+      </span>
       <span class="<%= @report.pending_approval? ? 'bg-purple-100 text-purple-800' : @report.pending? ? 'bg-yellow-100 text-yellow-800' : @report.in_progress? ? 'bg-orange-100 text-orange-800' : @report.resolved? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-4 py-2 rounded-full text-sm font-semibold">
         <%= @report.status.titleize %>
       </span>
-      <span class="<%= @report.critical? ? 'bg-red-100 text-red-800' : @report.high? ? 'bg-orange-100 text-orange-800' : @report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-4 py-2 rounded-full text-sm font-semibold">
-        <%= @report.priority.titleize %> Priority
-      </span>
+      <% unless current_user&.resident? %>
+        <span class="<%= @report.critical? ? 'bg-red-100 text-red-800' : @report.high? ? 'bg-orange-100 text-orange-800' : @report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-4 py-2 rounded-full text-sm font-semibold">
+          <%= @report.priority.titleize %> Priority
+        </span>
+      <% end %>
     </div>
 
     <!-- Admin Reopen Approval Actions -->
@@ -156,8 +159,24 @@
       </div>
     <% end %>
 
+    <!-- Quick Status Update Buttons (Officials only) -->
+    <% if current_user&.barangay_official? && !@report.pending_approval? && !@report.resolved? %>
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">Quick Status Update</h3>
+        <div class="flex flex-wrap gap-3">
+          <% unless @report.in_progress? %>
+            <%= button_to "Set In Progress", update_status_report_path(@report, status: 'in_progress'), method: :post, data: { turbo: false }, class: "bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition" %>
+          <% end %>
+          <% unless @report.resolved? %>
+            <%= button_to "Set Resolved", update_status_report_path(@report, status: 'resolved'), method: :post, data: { turbo: false }, class: "bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition" %>
+          <% end %>
+          
+        </div>
+      </div>
+    <% end %>
+
     <!-- Actions -->
-    <% if (@report.closed? || @report.resolved?) && @report.user == current_user %>
+    <% if policy(@report).request_reopen? %>
       <div class="bg-<%= @report.closed? ? 'gray' : 'green' %>-50 border border-<%= @report.closed? ? 'gray' : 'green' %>-200 rounded-lg p-4 pt-6 border-t">
         <div class="text-center">
           <div class="text-<%= @report.closed? ? 'gray' : 'green' %>-600 mb-2">
@@ -191,7 +210,7 @@
       </div>
     <% elsif policy(@report).update? || policy(@report).destroy? %>
       <div class="flex gap-4 pt-6 border-t">
-        <% if policy(@report).update? %>
+        <% if policy(@report).update? && !current_user&.barangay_official? %>
           <%= link_to edit_report_path(@report), class: "bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" do %>
             ✏️ Edit Report
           <% end %>
@@ -208,7 +227,7 @@
 
 <!-- Comments Section -->
 <div class="bg-white rounded-lg shadow-lg p-8">
-  <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Comments (<%= @report.comments.count %>)</h2>
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Comments (<%= @report.comments.size %>)</h2>
 
   <!-- Add Comment Form -->
   <% if user_signed_in? %>

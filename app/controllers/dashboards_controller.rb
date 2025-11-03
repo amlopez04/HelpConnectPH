@@ -4,9 +4,11 @@ class DashboardsController < ApplicationController
   def show
     case current_user.role
     when "resident"
-      @my_reports = current_user.reports.order(created_at: :desc).limit(5)
+      @my_reports = current_user.reports.includes(:category, :barangay).order(created_at: :desc).limit(5)
       # Residents can see all community reports (using policy scope)
       @recent_reports = policy_scope(Report).includes(:user, :category, :barangay).order(created_at: :desc).limit(10)
+      # Preload categories with report counts to avoid N+1
+      @categories = Category.all.includes(:reports)
       render :resident
     when "barangay_official"
       if current_user.barangay

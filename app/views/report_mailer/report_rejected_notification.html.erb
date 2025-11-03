@@ -38,7 +38,7 @@
   </ul>
 </div>
 
-<%= link_to "Submit New Report", url_for(controller: 'reports', action: 'new', only_path: false), class: "button" %>
+<a href="<%= new_report_url(host: Rails.application.config.action_mailer.default_url_options[:host]) %>" class="button" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 15px 0;">Submit New Report</a>
 
 <p style="margin-top: 30px; font-size: 14px; color: #64748b;">
   <strong>Report ID:</strong> #<%= @report.id %><br>

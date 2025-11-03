@@ -1,10 +1,15 @@
 class ReportsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_report, only: [ :show, :edit, :update, :destroy, :approve, :reject, :request_reopen, :approve_reopen ]
+  before_action :set_report, only: [ :show, :edit, :update, :destroy, :approve, :reject, :request_reopen, :approve_reopen, :update_status ]
 
   def index
     # Use Pundit policy scope to filter reports based on user role
     @reports = policy_scope(Report).includes(:user, :barangay, :category)
+
+    # Resident "My Reports" filter
+    if current_user&.resident? && params[:my_reports] == "true"
+      @reports = @reports.where(user_id: current_user.id)
+    end
 
     # Filter by status if provided
     if params[:status].present?
@@ -21,12 +26,32 @@ class ReportsController < ApplicationController
       @reports = @reports.where(barangay_id: params[:barangay_id])
     end
 
+    # Admin search filter
+    if current_user&.admin? && params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @reports = @reports.where(
+        "reports.title ILIKE ? OR reports.description ILIKE ? OR reports.address ILIKE ?",
+        search_term, search_term, search_term
+      )
+    end
+
+    # Admin spam filter
+    if current_user&.admin? && params[:spam].present? && params[:spam] == "true"
+      # Load reports efficiently and check for spam
+      spam_ids = []
+      @reports.find_each do |report|
+        spam_ids << report.id if report.potential_spam?
+      end
+      @reports = @reports.where(id: spam_ids) if spam_ids.any?
+      @reports = @reports.none if spam_ids.empty?
+    end
+
     @reports = @reports.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   def show
     authorize @report
-    @report.comments.reload # Ensure comments are loaded
+    @report.comments.includes(:user).reload # Ensure comments with users are loaded
   end
 
   def new
@@ -37,6 +62,11 @@ class ReportsController < ApplicationController
   def create
     @report = current_user.reports.build(report_params)
     authorize @report
+
+    # Ensure default priority is medium unless explicitly set by officials/admins
+    if @report.priority.blank? || current_user&.resident?
+      @report.priority = :medium
+    end
 
     if @report.save
       # Send email notification to admin for approval (not to barangay captain yet)
@@ -94,11 +124,11 @@ class ReportsController < ApplicationController
   def reject
     authorize @report, :update?
 
-    if @report.update(status: :closed)
+    if @report.update(status: :resolved)
       # Send rejection email to report creator
       ReportMailer.report_rejected_notification(@report).deliver_now
 
-      redirect_to @report, notice: "Report rejected and closed."
+      redirect_to @report, notice: "Report rejected and marked as resolved."
     else
       redirect_to @report, alert: "Failed to reject report."
     end
@@ -131,6 +161,34 @@ class ReportsController < ApplicationController
       redirect_to @report
     else
       redirect_to @report, alert: "This report is not awaiting reopen approval."
+    end
+  end
+
+  # Quick status update for officials/admins
+  def update_status
+    authorize @report, :update?
+
+    new_status = params[:status]
+    old_status = @report.status
+
+    if Report.statuses.key?(new_status.to_sym)
+      if @report.update(status: new_status)
+        # Set resolved_at if status is resolved
+        if new_status.to_sym == :resolved
+          @report.update(resolved_at: Time.current) unless @report.resolved_at.present?
+        end
+
+        # Send email notification to report creator if status changed
+        if old_status != new_status
+          ReportMailer.status_change_notification(@report, old_status).deliver_now
+        end
+
+        redirect_to @report, notice: "Report status updated to #{new_status.titleize}."
+      else
+        redirect_to @report, alert: "Failed to update status."
+      end
+    else
+      redirect_to @report, alert: "Invalid status."
     end
   end
 

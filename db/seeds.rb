@@ -1,5 +1,37 @@
 # Skip seeding in test environment
 unless Rails.env.test?
+  # Avoid hitting external geocoding service during seeds to prevent JSON errors/rate limits
+  begin
+    Geocoder.configure(lookup: :test)
+    Geocoder::Lookup::Test.set_default_stub([
+      {
+        'latitude' => 14.4793095,
+        'longitude' => 121.0198229,
+        'address' => 'Parañaque, PH'
+      }
+    ])
+  rescue NameError
+    # Geocoder not loaded in this context; ignore
+  end
+  # Helper: Parañaque safe center coordinates and bounds check
+  CENTER_LAT = 14.4793095
+  CENTER_LNG = 121.0198229
+  NORTH = 14.5050
+  SOUTH = 14.4580
+  EAST  = 121.0450
+  WEST  = 120.9730
+
+  def within_paranaque_bounds?(lat, lng)
+    lat && lng && lat > SOUTH && lat < NORTH && lng > WEST && lng < EAST
+  end
+
+  def safe_coords_for(barangay)
+    lat = barangay.latitude&.to_f
+    lng = barangay.longitude&.to_f
+    return [CENTER_LAT, CENTER_LNG] unless within_paranaque_bounds?(lat, lng)
+    [lat, lng]
+  end
+
   # Clear existing data
   puts "Clearing existing data..."
   Report.destroy_all
@@ -104,6 +136,65 @@ unless Rails.env.test?
     puts "  ✅ Official: #{email} (assigned to #{barangay.name})"
   end
 
+  puts "\nCreating Sample Spam Users (for ban testing)..."
+  spam_users = []
+  3.times do |i|
+    spam_user = User.find_or_create_by!(email: "spammer#{i + 1}@test.com") do |user|
+      user.password = "password123"
+      user.password_confirmation = "password123"
+      user.role = :resident
+      user.barangay = barangays_created.sample
+      user.confirmed_at = Time.current
+      user.phone_number = "+63912345678#{i}"
+    end
+    
+    # Create spam reports (many reports in short time) including gibberish text
+    if spam_user.persisted?
+      gibberish_samples = [
+        "fahwefhuawfhuawefhuawfhuawfhawfhuawfhuawef",
+        "qwrtypklzxcvbnmghjdfghjdfghjdfghjdfg",
+        "zzzzzzzzzzzzzzzzzzzzzzzz",
+        "bvvccxnnmmqwrtplkjhgfdsa"
+      ]
+
+      3.times do |j|
+        lat, lng = safe_coords_for(spam_user.barangay)
+        Report.create!(
+          title: "Gibberish Report #{j + 1}",
+          description: gibberish_samples.sample,
+          address: spam_user.barangay.address,
+          status: :pending_approval,
+          priority: :medium,
+          barangay: spam_user.barangay,
+          category: categories_created.sample,
+          user: spam_user,
+          latitude: lat,
+          longitude: lng,
+          created_at: j.hours.ago
+        )
+      end
+
+      3.times do |j|
+        lat, lng = safe_coords_for(spam_user.barangay)
+        Report.create!(
+          title: "Spam Burst #{j + 1}",
+          description: "Buy now! Visit http://spam.example/",
+          address: spam_user.barangay.address,
+          status: :pending_approval,
+          priority: :medium,
+          barangay: spam_user.barangay,
+          category: categories_created.sample,
+          user: spam_user,
+          latitude: lat,
+          longitude: lng,
+          created_at: (j + 3).hours.ago
+        )
+      end
+      spam_users << spam_user
+      puts "  ✅ Spam User: #{spam_user.email} (created #{spam_user.reports.count} spam reports)"
+    end
+  end
+
   puts "\nCreating Test Reports (at least 2 per barangay by residents from that barangay)..."
   # Create test reports for each barangay using the resident from that barangay
   barangays_created.each do |barangay|
@@ -119,25 +210,47 @@ unless Rails.env.test?
       "Flooding in Residential Area"
     ]
 
-    # Create 2-4 reports per barangay
+    # Create 2-4 reports per barangay (no more :closed status)
     rand(2..4).times do
       category = categories_created.sample
+      lat, lng = safe_coords_for(barangay)
       report = Report.create!(
         title: report_titles.sample,
         description: "Issue reported in #{barangay.name}. Needs attention from local authorities.",
         address: barangay.address,
-        status: [ :pending, :in_progress, :resolved, :closed ].sample,
-        priority: [ :low, :medium, :high ].sample,
+        status: [ :pending, :in_progress, :resolved ].sample,
+        priority: :medium,
         barangay: barangay,
         category: category,
         user: resident,
-        latitude: barangay.latitude,
-        longitude: barangay.longitude
+        latitude: lat,
+        longitude: lng
       )
       puts "  Created report: #{report.title} in #{barangay.name} by #{resident.email}"
     end
   end
   puts "Created #{Report.count} reports"
+
+  # Sample Reopen Requested reports
+  puts "\nCreating sample 'Reopen Requested' reports..."
+  [0, 1].each do |idx|
+    resident = residents_created[idx]
+    next unless resident
+    barangay = resident.barangay
+    lat, lng = safe_coords_for(barangay)
+    Report.create!(
+      title: "Request to Reopen ##{idx + 1}",
+      description: "Resident requests to reopen this issue for further attention.",
+      address: barangay.address,
+      status: :reopen_requested,
+      priority: :medium,
+      barangay: barangay,
+      category: categories_created.sample,
+      user: resident,
+      latitude: lat,
+      longitude: lng
+    )
+  end
 
   puts "\n" + "="*60
   puts "🎉 Seed data created successfully!"
@@ -151,6 +264,10 @@ unless Rails.env.test?
   puts "\n   Residents (16 total, one per barangay):"
   residents_created.each do |resident|
     puts "   • #{resident.email} / password123 (#{resident.barangay.name})"
+  end
+  puts "\n   🚨 Spam Users (for ban testing - 3 total):"
+  spam_users.each do |spam|
+    puts "   • #{spam.email} / password123 (#{spam.reports.count} spam reports)"
   end
   puts "\n📊 Data Created:"
   puts "   Barangays:     #{Barangay.count}"

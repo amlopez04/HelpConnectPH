@@ -97,49 +97,67 @@
   </div>
 
   <!-- Priority & Status (Side by Side) -->
-  <div class="grid md:grid-cols-2 gap-6 mb-6">
-    <!-- Priority -->
-    <div>
-      <%= f.label :priority, "Priority Level *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-      <% if current_user.barangay_official? || current_user.admin? || report.new_record? %>
-        <%= f.select :priority, Report.priorities.keys.map { |p| [p.titleize, p] }, { prompt: "Select Priority" }, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500", required: true } %>
-        <% if report.new_record? %>
-          <p class="text-xs text-gray-500 mt-1">Set the initial priority level</p>
-        <% else %>
-          <p class="text-xs text-gray-500 mt-1">Officials/Admins can update priority</p>
-        <% end %>
-      <% else %>
-        <div class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50">
-          <span class="<%= report.critical? ? 'text-red-600' : report.high? ? 'text-orange-600' : report.medium? ? 'text-yellow-600' : 'text-gray-600' %> font-semibold">
-            <%= report.priority.titleize %>
-          </span>
-        </div>
-        <p class="text-xs text-gray-500 mt-1">Only officials and admins can change priority</p>
-        <%= f.hidden_field :priority %>
-      <% end %>
-    </div>
+  <% if current_user.barangay_official? || current_user.admin? %>
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <!-- Priority (Only for Officials/Admins) -->
+      <div>
+        <%= f.label :priority, "Priority Level *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+        <%= f.select :priority, Report.priorities.keys.map { |p| [p.titleize, p] }, { prompt: "Select Priority", selected: report.priority || 'medium' }, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500", required: true } %>
+        <p class="text-xs text-gray-500 mt-1">Officials/Admins can set priority</p>
+      </div>
 
-    <!-- Status (Only for Officials/Admins) -->
-    <% if current_user.barangay_official? || current_user.admin? %>
+      <!-- Status (Only for Officials/Admins) -->
       <div>
         <%= f.label :status, "Status", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-        <%= f.select :status, Report.statuses.keys.map { |s| [s.titleize, s] }, {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
+        <%= f.select :status, Report.statuses.keys.map { |s| [s.titleize, s] }, { selected: report.status }, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" } %>
         <p class="text-xs text-gray-500 mt-1">Officials/Admins can update status</p>
       </div>
+    </div>
+  <% end %>
+  
+  <!-- Hidden priority field for residents (defaults to medium) -->
+  <% if current_user.resident? %>
+    <%= f.hidden_field :priority, value: 'medium' %>
+  <% end %>
+
+  <!-- Photo Upload -->
+  <div class="mb-6" data-controller="photo-upload">
+    <% if current_user.resident? %>
+      <div class="relative">
+        <%= f.file_field :photos, 
+            multiple: true, 
+            accept: "image/*", 
+            id: "resident_photos_upload",
+            data: { 
+              photo_upload_target: "input",
+              action: "change->photo-upload#validateFiles"
+            },
+            style: "position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; visibility: hidden;" %>
+        <label for="resident_photos_upload" class="cursor-pointer block">
+          <div class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition text-center">
+            <div class="flex flex-col items-center justify-center">
+              <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span class="text-sm font-medium text-gray-700" data-photo-upload-target="label">Click to upload photos</span>
+              <span class="text-xs text-gray-500 mt-1">Maximum 3 photos allowed</span>
+            </div>
+          </div>
+        </label>
+      </div>
+      <div data-photo-upload-target="error" class="text-red-600 text-xs mt-2 hidden"></div>
+      <div data-photo-upload-target="fileList" class="mt-2"></div>
+    <% else %>
+      <%= f.label :photos, "Photos (Optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= f.file_field :photos, multiple: true, accept: "image/*", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+      <p class="text-xs text-gray-500 mt-1">Upload photos of the issue (multiple files allowed)</p>
     <% end %>
   </div>
 
-  <!-- Photo Upload -->
-  <div class="mb-6">
-    <%= f.label :photos, "Photos (Optional)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-    <%= f.file_field :photos, multiple: true, accept: "image/*", class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-    <p class="text-xs text-gray-500 mt-1">Upload photos of the issue (multiple files allowed)</p>
-  </div>
-
   <!-- Submit Buttons -->
-  <div class="flex gap-4">
-    <%= f.submit class: "bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
-    <%= link_to "Cancel", reports_path, class: "bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition" %>
+  <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+    <%= f.submit class: "w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
+    <%= link_to "Cancel", reports_path, class: "w-full sm:w-auto text-center bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition" %>
   </div>
 <% end %>
 

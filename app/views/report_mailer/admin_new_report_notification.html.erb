@@ -74,9 +74,9 @@
   <h4 style="margin-top: 0; color: #1e40af;">Admin Actions Required</h4>
   <p style="margin: 0 0 15px 0;"><strong>This report requires your approval before it can be sent to the barangay captain.</strong></p>
   <div style="display: flex; gap: 10px; margin-top: 15px;">
-    <a href="<%= url_for(controller: 'reports', action: 'approve', id: @report.id, only_path: false) %>" style="background-color: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">✅ Approve Report</a>
-    <a href="<%= url_for(controller: 'reports', action: 'reject', id: @report.id, only_path: false) %>" style="background-color: #ef4444; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">❌ Reject Report</a>
-    <a href="<%= url_for(controller: 'reports', action: 'show', id: @report.id, only_path: false) %>" style="background-color: #6b7280; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">👁️ Review Details</a>
+    <a href="<%= approve_report_url(@report, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" style="background-color: #10b981; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">✅ Approve Report</a>
+    <a href="<%= reject_report_url(@report, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" style="background-color: #ef4444; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">❌ Reject Report</a>
+    <a href="<%= report_url(@report, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" style="background-color: #6b7280; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">👁️ Review Details</a>
   </div>
 </div>
 

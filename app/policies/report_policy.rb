@@ -44,8 +44,12 @@ class ReportPolicy < ApplicationPolicy
     # Cannot update closed or resolved reports (except admins)
     return false if (record.closed? || record.resolved?) && !user.admin?
 
-    # Report creator can update their own report (if not closed or resolved)
-    return true if record.user == user && !record.closed? && !record.resolved?
+    # Residents can only edit reports that are still pending_approval
+    # Once approved (status is pending or beyond), they cannot edit
+    if user.resident? && record.user == user
+      # Explicitly allow editing only when status is pending_approval
+      return record.pending_approval?
+    end
 
     # Admin can update any report
     return true if user.admin?
@@ -68,8 +72,12 @@ class ReportPolicy < ApplicationPolicy
     # Cannot delete closed reports (except admins)
     return false if record.closed? && !user.admin?
 
-    # Report creator can delete their own report (if not closed)
-    return true if record.user == user && !record.closed?
+    # Residents can only delete reports that are still pending_approval
+    # Once approved (status is pending or beyond), they cannot delete
+    if user.resident? && record.user == user
+      return false if record.status != :pending_approval
+      return true if record.pending_approval?
+    end
 
     # Admin can delete any report
     return true if user.admin?

@@ -31,7 +31,7 @@
   </ul>
 </div>
 
-<%= link_to "View Report", url_for(controller: 'reports', action: 'show', id: @report.id, only_path: false), class: "button" %>
+<a href="<%= report_url(@report, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" class="button" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 15px 0;">View Report</a>
 
 <p style="margin-top: 30px; font-size: 14px; color: #64748b;">
   <strong>Report ID:</strong> #<%= @report.id %><br>

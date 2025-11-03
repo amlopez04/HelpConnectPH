@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_20_122827) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_03_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,9 +105,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_20_122827) do
     t.string "unconfirmed_email"
     t.integer "role", default: 0, null: false
     t.bigint "barangay_id"
+    t.string "phone_number"
+    t.boolean "phone_verified", default: false, null: false
+    t.datetime "banned_at"
+    t.datetime "deleted_at"
+    t.string "ban_reason"
+    t.index ["banned_at"], name: "index_users_on_banned_at"
     t.index ["barangay_id"], name: "index_users_on_barangay_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["phone_number"], name: "index_users_on_phone_number", unique: true, where: "(phone_number IS NOT NULL)"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role"
   end

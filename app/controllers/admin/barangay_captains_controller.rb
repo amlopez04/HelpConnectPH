@@ -4,18 +4,34 @@ class Admin::BarangayCaptainsController < ApplicationController
   def new
     authorize [ :admin, :barangay_captain ], :new?
 
-    # Get barangays that don't have a captain yet
-    barangays_with_captains = User.where(role: :barangay_official).pluck(:barangay_id)
-    @available_barangays = Barangay.where.not(id: barangays_with_captains).order(:name)
+    # Require barangay_id parameter
+    unless params[:barangay_id].present?
+      redirect_to barangays_path, alert: "Please select a barangay first to create a captain account."
+      return
+    end
 
-    @user = User.new
+    @barangay = Barangay.find_by(id: params[:barangay_id])
+    
+    # Check if barangay exists
+    unless @barangay
+      redirect_to barangays_path, alert: "Barangay not found."
+      return
+    end
+
+    # Check if barangay already has a captain
+    if @barangay.users.barangay_official.any?
+      redirect_to barangay_path(@barangay), alert: "This barangay already has a captain assigned."
+      return
+    end
+
+    @user = User.new(barangay_id: @barangay.id)
   end
 
   def create
     authorize [ :admin, :barangay_captain ], :create?
 
-    # Set default password (all captains get same password initially)
-    generated_password = "Captain2024!"
+    # Generate secure random password (alphanumeric + symbols, 8 characters)
+    generated_password = ApplicationHelper.generate_secure_password
 
     @user = User.new(
       email: params[:user][:email],

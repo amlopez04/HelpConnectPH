@@ -17,63 +17,220 @@
 
 <!-- Filters -->
 <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-  <div class="flex flex-wrap gap-2 mb-4">
-    <%= link_to "All", reports_path, class: "px-4 py-2 rounded-lg font-semibold #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Pending", reports_path(status: 'pending'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "In Progress", reports_path(status: 'in_progress'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'in_progress' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Resolved", reports_path(status: 'resolved'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'resolved' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Closed", reports_path(status: 'closed'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'closed' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
-    <%= link_to "Reopen Requested", reports_path(status: 'reopen_requested'), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'reopen_requested' ? 'bg-pink-200 text-pink-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+  <!-- Removed resident category chips; unified filter UI across roles -->
+  
+  <div class="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
+    <% 
+      # Build filter params that preserve admin filters when clicking status buttons
+      filter_params = {}
+      if current_user&.admin?
+        filter_params[:search] = params[:search] if params[:search].present?
+        filter_params[:barangay_id] = params[:barangay_id] if params[:barangay_id].present?
+        filter_params[:spam] = params[:spam] if params[:spam] == "true"
+      end
+      # Preserve category filter
+      filter_params[:category_id] = params[:category_id] if params[:category_id].present?
+    %>
+    <%= link_to "All", reports_path(filter_params.except(:status)), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <% if current_user&.admin? %>
+      <%= link_to "To Approve", reports_path(filter_params.merge(status: 'pending_approval')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'pending_approval' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <% end %>
+    <%= link_to "Pending", reports_path(filter_params.merge(status: 'pending')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'pending' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "In Progress", reports_path(filter_params.merge(status: 'in_progress')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'in_progress' ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <%= link_to "Resolved", reports_path(filter_params.merge(status: 'resolved')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'resolved' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <% if current_user&.admin? %>
+      <%= link_to "Reopen Requested", reports_path(filter_params.merge(status: 'reopen_requested')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].to_s == 'reopen_requested' ? 'bg-pink-200 text-pink-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    <% end %>
   </div>
   
-  <!-- Admin Location Filter -->
+  <!-- Admin/Official/Resident Filters (role-specific fields) -->
   <% if current_user&.admin? %>
-    <%= form_with url: reports_path, method: :get, local: true, class: "flex flex-wrap gap-2 items-end" do |f| %>
+    <%= form_with url: reports_path, method: :get, local: true, class: "space-y-3", data: { controller: "autosubmit", autosubmit_delay_value: 400 } do |f| %>
       <%= f.hidden_field :status, value: params[:status] %>
-      <div>
-        <%= f.label :barangay_id, "Filter by Barangay:", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.collection_select :barangay_id, Barangay.all, :id, :name, 
-            { prompt: "Select Barangay", selected: params[:barangay_id] }, 
-            { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+      
+      <!-- Search and Quick Filters Row -->
+      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
+        <!-- Search -->
+        <div class="flex-1 min-w-[250px]">
+          <%= f.label :search, "Search Reports:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :search, 
+              placeholder: "Search by title, description, or address...", 
+              value: params[:search],
+              data: { action: "input->autosubmit#schedule" },
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" %>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="sm:w-auto">
+          <%= f.label :category_id, "Category:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :category_id, Category.all.order(:name), :id, :name,
+              { prompt: "All Categories", selected: params[:category_id] },
+              { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+        </div>
+
+        <!-- Barangay Filter -->
+        <div class="sm:w-auto">
+          <%= f.label :barangay_id, "Barangay:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :barangay_id, Barangay.all, :id, :name, 
+              { prompt: "All Barangays", selected: params[:barangay_id] }, 
+              { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+        </div>
+        
+        <!-- Spam Filter Toggle -->
+        <div class="flex items-center">
+          <label class="flex items-center cursor-pointer">
+            <%= f.check_box :spam, { checked: params[:spam] == "true" }, "true", "" %>
+            <span class="ml-2 text-sm font-medium text-gray-700">Show Spam Only</span>
+          </label>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="sm:w-auto">
+          <%= f.submit "Apply Filters", class: "w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+        </div>
       </div>
-      <div>
-        <%= f.submit "Filter", class: "bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
-      </div>
+      
+      <!-- Active Filters Display -->
+      <% if params[:barangay_id].present? || params[:search].present? || params[:spam] == "true" || params[:category_id].present? %>
+        <div class="flex flex-wrap gap-2 items-center text-sm">
+          <span class="font-medium text-gray-700">Active filters:</span>
+          <% if params[:category_id].present? %>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
+              Category: <%= Category.find(params[:category_id]).name %>
+              <%= link_to "×", reports_path(params.permit(:status, :search, :barangay_id, :spam).except(:category_id)), class: "ml-1 hover:text-indigo-900" %>
+            </span>
+          <% end %>
+          <% if params[:search].present? %>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+              Search: "<%= params[:search] %>"
+              <%= link_to "×", reports_path(params.permit(:status, :category_id, :barangay_id, :spam).except(:search)), class: "ml-1 hover:text-blue-900" %>
+            </span>
+          <% end %>
+          <% if params[:barangay_id].present? %>
+            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+              Barangay: <%= Barangay.find(params[:barangay_id]).name %>
+              <%= link_to "×", reports_path(params.permit(:status, :category_id, :search, :spam).except(:barangay_id)), class: "ml-1 hover:text-purple-900" %>
+            </span>
+          <% end %>
+          <% if params[:spam] == "true" %>
+            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">
+              Spam Reports Only
+              <%= link_to "×", reports_path(params.permit(:status, :category_id, :search, :barangay_id).except(:spam)), class: "ml-1 hover:text-red-900" %>
+            </span>
+          <% end %>
+          <%= link_to "Clear All", reports_path(params.permit(:status)), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+        </div>
+      <% end %>
     <% end %>
-    
-    <% if params[:barangay_id].present? %>
-      <div class="mt-2 text-sm text-gray-600">
-        Showing reports for <%= Barangay.find(params[:barangay_id]).name %>
+  <% elsif current_user&.barangay_official? %>
+    <%= form_with url: reports_path, method: :get, local: true, class: "space-y-3", data: { controller: "autosubmit", autosubmit_delay_value: 400 } do |f| %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
+        <div class="flex-1 min-w-[250px]">
+          <%= f.label :search, "Search Reports:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :search,
+              placeholder: "Search by title, description, or address...",
+              value: params[:search],
+              data: { action: "input->autosubmit#schedule" },
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" %>
+        </div>
+        <div class="sm:w-auto">
+          <%= f.label :category_id, "Category:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :category_id, Category.all.order(:name), :id, :name,
+              { prompt: "All Categories", selected: params[:category_id] },
+              { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+        </div>
+        <div class="sm:w-auto">
+          <%= f.submit "Apply Filters", class: "w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+        </div>
       </div>
+      <% if params[:search].present? || params[:category_id].present? %>
+        <div class="flex flex-wrap gap-2 items-center text-sm">
+          <span class="font-medium text-gray-700">Active filters:</span>
+          <% if params[:category_id].present? %>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
+              Category: <%= Category.find(params[:category_id]).name %>
+              <%= link_to "×", reports_path(params.permit(:status, :search).except(:category_id)), class: "ml-1 hover:text-indigo-900" %>
+            </span>
+          <% end %>
+          <% if params[:search].present? %>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+              Search: "<%= params[:search] %>"
+              <%= link_to "×", reports_path(params.permit(:status, :category_id).except(:search)), class: "ml-1 hover:text-blue-900" %>
+            </span>
+          <% end %>
+          <%= link_to "Clear All", reports_path(params.permit(:status)), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <!-- Resident filters: search + category only (no barangay/spam) -->
+    <%= form_with url: reports_path, method: :get, local: true, class: "space-y-3", data: { controller: "autosubmit", autosubmit_delay_value: 400 } do |f| %>
+      <%= f.hidden_field :status, value: params[:status] %>
+      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
+        <div class="flex-1 min-w-[250px]">
+          <%= f.label :search, "Search Reports:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :search,
+              placeholder: "Search by title, description, or address...",
+              value: params[:search],
+              data: { action: "input->autosubmit#schedule" },
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" %>
+        </div>
+        <div class="sm:w-auto">
+          <%= f.label :category_id, "Category:", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.collection_select :category_id, Category.all.order(:name), :id, :name,
+              { prompt: "All Categories", selected: params[:category_id] },
+              { class: "px-3 py-2 border border-gray-300 rounded-lg" } %>
+        </div>
+        <div class="sm:w-auto">
+          <%= f.submit "Apply Filters", class: "w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+        </div>
+      </div>
+      <% if params[:search].present? || params[:category_id].present? %>
+        <div class="flex flex-wrap gap-2 items-center text-sm">
+          <span class="font-medium text-gray-700">Active filters:</span>
+          <% if params[:category_id].present? %>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
+              Category: <%= Category.find(params[:category_id]).name %>
+              <%= link_to "×", reports_path(params.permit(:status, :search).except(:category_id)), class: "ml-1 hover:text-indigo-900" %>
+            </span>
+          <% end %>
+          <% if params[:search].present? %>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+              Search: "<%= params[:search] %>"
+              <%= link_to "×", reports_path(params.permit(:status, :category_id).except(:search)), class: "ml-1 hover:text-blue-900" %>
+            </span>
+          <% end %>
+          <%= link_to "Clear All", reports_path(params.permit(:status)), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 </div>
 
 <!-- Reports List -->
 <% if @reports.any? %>
-  <div class="grid gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
     <% @reports.each do |report| %>
       <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1">
-        <div class="p-6">
+        <div class="<%= current_user&.admin? ? 'p-4' : 'p-6' %>">
           <!-- Header -->
           <div class="flex justify-between items-start mb-4">
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-gray-900 mb-2"><%= report.title %></h3>
+              <h3 class="<%= current_user&.admin? ? 'text-lg font-bold text-gray-900 mb-1 leading-tight' : 'text-xl font-bold text-gray-900 mb-2' %>"><%= report.title %></h3>
               <div class="flex items-center text-sm text-gray-500">
-                <span>Reported by <%= report.user.email %></span>
-                <span class="mx-2">•</span>
                 <span><%= time_ago_in_words(report.created_at) %> ago</span>
               </div>
             </div>
           </div>
 
           <!-- Description -->
-          <p class="text-gray-600 mb-4"><%= truncate(report.description, length: 200) %></p>
+          <p class="text-gray-600 <%= current_user&.admin? ? 'mb-3 leading-snug' : 'mb-4' %>"><%= truncate(report.description, length: current_user&.admin? ? 140 : 200) %></p>
 
           <!-- Badges -->
           <div class="flex flex-wrap gap-2 mb-4">
             <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-              <%= report.category.name %>
+              🏷️ <%= report.category.name %>
             </span>
             <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
               📍 <%= report.barangay.name %>
@@ -81,19 +238,30 @@
             <span class="<%= report.pending_approval? ? 'bg-purple-100 text-purple-800' : report.pending? ? 'bg-yellow-100 text-yellow-800' : report.in_progress? ? 'bg-orange-100 text-orange-800' : report.resolved? ? 'bg-green-100 text-green-800' : report.closed? ? 'bg-gray-100 text-gray-800' : 'bg-pink-100 text-pink-800' %> px-3 py-1 rounded-full text-sm font-semibold">
               <%= report.status.titleize %>
             </span>
-            <span class="<%= report.critical? ? 'bg-red-100 text-red-800' : report.high? ? 'bg-orange-100 text-orange-800' : report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">
-              <%= report.priority.titleize %> Priority
-            </span>
+            <% unless current_user&.resident? %>
+              <span class="<%= report.critical? ? 'bg-red-100 text-red-800' : report.high? ? 'bg-orange-100 text-orange-800' : report.medium? ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-semibold">
+                <%= report.priority.titleize %> Priority
+              </span>
+            <% end %>
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-between items-center pt-4 border-t">
-            <div class="text-sm text-gray-500">
+          <div class="flex justify-between items-center <%= current_user&.admin? ? 'pt-3' : 'pt-4' %> border-t">
+            <div class="flex items-center gap-2 <%= current_user&.admin? ? 'text-xs' : 'text-sm' %> text-gray-500">
               <% if report.photos.attached? %>
                 <span>📷 <%= report.photos.count %> photo(s)</span>
               <% end %>
+              <% if current_user&.admin? && report.potential_spam? %>
+                <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold">Spam?</span>
+              <% end %>
             </div>
-            <%= link_to "View Details →", report, class: "text-blue-600 hover:text-blue-800 font-semibold" %>
+            <div class="flex items-center gap-2">
+              <% if current_user&.admin? && (params[:status].to_s == 'pending_approval' || params[:spam] == 'true') %>
+                <%= link_to "Accept", approve_report_path(report), data: { turbo_method: :post, turbo_confirm: "Approve this report?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-green-600 text-green-700 hover:bg-green-50" %>
+                <%= link_to "Reject", reject_report_path(report), data: { turbo_method: :post, turbo_confirm: "Reject/close this report?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-red-600 text-red-700 hover:bg-red-50" %>
+              <% end %>
+              <%= link_to current_user&.admin? ? "View" : "View Details →", report, class: "text-blue-600 hover:text-blue-800 font-semibold #{current_user&.admin? ? 'text-sm' : ''}" %>
+            </div>
           </div>
         </div>
       </div>

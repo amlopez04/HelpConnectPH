@@ -19,7 +19,7 @@
     </div>
 
     <div style="margin: 30px 0; text-align: center;">
-      <%= link_to "View Your Report", report_url(report, host: 'localhost:3000'), style: "display: inline-block; background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;" %>
+      <a href="<%= report_url(report, host: Rails.application.config.action_mailer.default_url_options[:host]) %>" style="display: inline-block; background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Your Report</a>
     </div>
 
     <p style="color: #666; font-size: 14px; line-height: 1.6;">

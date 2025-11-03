@@ -1,0 +1,142 @@
+<div class="mb-4">
+  <div class="flex items-end justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-1">User Management</h1>
+      <p class="text-gray-600 text-sm">Moderate residents and officials. Use filters to narrow the list.</p>
+    </div>
+    <div class="hidden sm:block text-sm text-gray-600">Total: <span class="font-semibold"><%= @users.total_count rescue @users.count %></span></div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow-md p-4 mb-6">
+  <%= form_with url: admin_users_path, method: :get, local: true, data: { controller: "autosubmit", autosubmit_delay_value: 400 }, class: "space-y-3" do |f| %>
+    <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
+      <!-- Search -->
+      <div class="flex-1 min-w-[240px]">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Search Users</label>
+        <%= text_field_tag :search, params[:search], placeholder: "Search by email or phone...", data: { action: "input->autosubmit#schedule" }, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" %>
+      </div>
+
+      <!-- Role -->
+      <div class="sm:w-auto">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <%= select_tag :role,
+            options_for_select([["All", nil], ["Resident", "resident"], ["Barangay Official", "barangay_official"], ["Admin", "admin"]], params[:role]),
+            include_blank: false,
+            data: { action: "change->autosubmit#submit" },
+            class: "px-3 py-2 border border-gray-300 rounded-lg" %>
+      </div>
+
+      <!-- Submit (optional for mobile) -->
+      <div class="sm:w-auto">
+        <%= submit_tag "Apply", class: "w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+      </div>
+    </div>
+
+    <!-- Status chips (like Reports) -->
+    <div class="flex gap-2 mt-2 overflow-x-auto no-scrollbar">
+      <% filter_params = {} %>
+      <% filter_params[:role] = params[:role] if params[:role].present? %>
+      <% filter_params[:search] = params[:search] if params[:search].present? %>
+      <%= link_to "All", admin_users_path(filter_params.except(:status)), class: "px-4 py-2 rounded-lg font-semibold #{params[:status].blank? ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+      <%= link_to "Active", admin_users_path(filter_params.merge(status: 'active')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'active' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+      <%= link_to "Banned", admin_users_path(filter_params.merge(status: 'banned')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'banned' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+      <%= link_to "Deleted", admin_users_path(filter_params.merge(status: 'deleted')), class: "px-4 py-2 rounded-lg font-semibold #{params[:status] == 'deleted' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition" %>
+    </div>
+  <% end %>
+
+  <% if params[:role].present? || params[:search].present? || params[:status].present? %>
+    <div class="mt-2 flex flex-wrap gap-2 items-center text-sm">
+      <span class="font-medium text-gray-700">Active filters:</span>
+      <% if params[:role].present? %>
+        <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">Role: <%= params[:role].humanize %> <%= link_to "×", admin_users_path(params.permit(:search, :status).to_h), class: "ml-1 hover:text-indigo-900" %></span>
+      <% end %>
+      <% if params[:search].present? %>
+        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Search: "<%= params[:search] %>" <%= link_to "×", admin_users_path(params.permit(:role, :status).to_h), class: "ml-1 hover:text-blue-900" %></span>
+      <% end %>
+      <% if params[:status].present? %>
+        <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full">Status: <%= params[:status].humanize %> <%= link_to "×", admin_users_path(params.permit(:role, :search).to_h), class: "ml-1 hover:text-gray-900" %></span>
+      <% end %>
+      <%= link_to "Clear All", admin_users_path, class: "text-blue-600 hover:text-blue-800 font-medium" %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Summary cards removed per request -->
+
+<!-- Users Table -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-gray-900">All Users</h2>
+    <div class="text-xs text-gray-500 sm:hidden">Total: <%= @users.total_count rescue @users.count %></div>
+  </div>
+
+  <div class="overflow-hidden">
+    <table class="min-w-full table-fixed divide-y divide-gray-200 text-sm">
+      <thead class="bg-gray-50 sticky top-0 z-10">
+        <tr>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Email</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Role</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Barangay</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Phone</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Reports</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Created</th>
+          <th class="px-4 py-2 text-left text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Status</th>
+          <th class="px-4 py-2 text-right text-[11px] font-semibold tracking-wider text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @users.each do |user| %>
+          <tr class="<%= 'bg-red-50/40' if user.banned_at.present? %><%= 'bg-gray-50/60' if user.deleted_at.present? %>">
+            <td class="px-4 py-2 whitespace-nowrap align-top">
+              <div class="font-medium text-gray-900 leading-tight truncate max-w-[220px]"><%= link_to user.email, admin_user_path(user), class: "text-blue-600 hover:text-blue-800" %></div>
+              <% if user.banned_at.present? && user.ban_reason.present? %>
+                <div class="text-[11px] text-red-600 mt-0.5">Reason: <%= user.ban_reason %></div>
+              <% end %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap align-top">
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full <%= user.admin? ? 'bg-red-100 text-red-800' : user.barangay_official? ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' %>"><%= user.role.titleize %></span>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-gray-600 align-top"><%= user.barangay&.name || '—' %></td>
+            <td class="px-4 py-2 whitespace-nowrap text-gray-600 align-top"><%= user.phone_number || '—' %></td>
+            <td class="px-4 py-2 whitespace-nowrap text-gray-600 align-top"><%= user.reports.count %></td>
+            <td class="px-4 py-2 whitespace-nowrap text-gray-600 align-top"><%= user.created_at&.strftime('%Y-%m-%d') %></td>
+            <td class="px-4 py-2 whitespace-nowrap align-top">
+              <% if user.banned_at.present? %>
+                <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-red-100 text-red-800">Banned</span>
+              <% elsif user.deleted_at.present? %>
+                <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-gray-100 text-gray-800">Deleted</span>
+              <% else %>
+                <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-2 whitespace-nowrap text-sm text-right align-top">
+              <div class="inline-flex gap-2">
+                <% if user.resident? %>
+                  <% if user.banned_at.present? %>
+                    <%= link_to "Unban", unban_admin_user_path(user), data: { turbo_method: :post, turbo_confirm: "Are you sure?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-green-600 text-green-700 hover:bg-green-50", style: "min-width:80px;" %>
+                  <% else %>
+                    <%= link_to "Ban", ban_admin_user_path(user), data: { turbo_method: :post, turbo_confirm: "Are you sure?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-red-600 text-red-700 hover:bg-red-50", style: "min-width:80px;" %>
+                  <% end %>
+                <% end %>
+                <% unless user.resident? %>
+                  <% if user.deleted_at.present? %>
+                    <%= link_to "Restore", restore_admin_user_path(user), data: { turbo_method: :post, turbo_confirm: "Are you sure?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-blue-600 text-blue-700 hover:bg-blue-50", style: "min-width:80px;" %>
+                  <% else %>
+                    <%= link_to "Delete", soft_delete_admin_user_path(user), data: { turbo_method: :post, turbo_confirm: "Are you sure?" }, class: "inline-flex items-center justify-center px-2 py-0.5 text-xs rounded border border-gray-600 text-gray-700 hover:bg-gray-50", style: "min-width:80px;" %>
+                  <% end %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Pagination -->
+  <div class="px-6 py-4 border-t border-gray-200">
+    <%= paginate @users %>
+  </div>
+</div>

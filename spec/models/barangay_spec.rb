@@ -39,10 +39,4 @@ RSpec.describe Barangay, type: :model do
     end
   end
 
-  describe "associations" do
-    # Skip this test until Report model is created
-    # it "will have many reports" do
-    #   expect(Barangay.new).to respond_to(:reports)
-    # end
-  end
 end

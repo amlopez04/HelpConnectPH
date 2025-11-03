@@ -208,13 +208,18 @@ class ReportMailer < Devise::Mailer
     # Only send email if captain has a barangay assigned
     return unless @barangay.present?
 
+    # Generate password reset token so captain can change password directly from email
+    # We use send_reset_password_instructions which generates the token but don't send the default email
+    @reset_token = @captain.send(:set_reset_password_token)
+
     # Render the email template with the mailer layout to preserve CSS styling
     html_content = render_to_string(
       template: "report_mailer/welcome_captain",
       layout: "mailer",
       locals: {
         captain: @captain,
-        barangay: @barangay
+        barangay: @barangay,
+        reset_token: @reset_token
       }
     )
 

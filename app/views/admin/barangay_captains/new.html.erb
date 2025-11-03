@@ -2,20 +2,30 @@
   <!-- Header -->
   <div class="mb-6">
     <h1 class="text-3xl font-bold text-gray-900">Create Barangay Captain Account</h1>
-    <p class="text-gray-600 mt-2">Create an official account for a barangay captain. Each barangay can only have one captain.</p>
+    <p class="text-gray-600 mt-2">Create an official account for <strong><%= @barangay.name %></strong> barangay captain.</p>
   </div>
 
-  <!-- Check if all barangays have captains -->
-  <% if @available_barangays.empty? %>
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-      <div class="text-4xl mb-3">✅</div>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">All Barangays Have Captains</h3>
-      <p class="text-gray-600 mb-4">Every barangay in Parañaque City already has a captain assigned.</p>
-      <%= link_to "← Back to Dashboard", dashboard_path, class: "inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition" %>
+  <!-- Barangay Info Display -->
+  <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm font-medium text-blue-800">
+          📍 <strong>Assigning to:</strong> <%= @barangay.name %>
+          <% if @barangay.address.present? %>
+            <br><span class="text-blue-700">Address: <%= @barangay.address %></span>
+          <% end %>
+        </p>
+      </div>
     </div>
-  <% else %>
-    <!-- Form Card -->
-    <div class="bg-white rounded-lg shadow-md p-6">
+  </div>
+
+  <!-- Form Card -->
+  <div class="bg-white rounded-lg shadow-md p-6">
       <%= form_with model: @user, url: admin_barangay_captains_path, method: :post, local: true do |f| %>
         <!-- Error Messages -->
         <% if @user.errors.any? %>
@@ -42,16 +52,8 @@
           <p class="text-sm text-gray-500 mt-1">📧 Use a valid email address (can be test email for development)</p>
         </div>
 
-        <!-- Barangay Selection -->
-        <div class="mb-6">
-          <%= label_tag "user[barangay_id]", "Assign to Barangay", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-          <%= select_tag "user[barangay_id]", 
-            options_from_collection_for_select(@available_barangays, :id, :name),
-            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-            prompt: "Select a barangay...",
-            required: true %>
-          <p class="text-sm text-gray-500 mt-1">📍 Only barangays without captains are shown</p>
-        </div>
+        <!-- Hidden Barangay ID -->
+        <%= hidden_field_tag "user[barangay_id]", @barangay.id %>
 
         <!-- Info Box -->
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -66,24 +68,11 @@
         </div>
 
         <!-- Form Actions -->
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <%= f.submit "Create Captain Account", class: "flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
-          <%= link_to "Cancel", dashboard_path, class: "flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center" %>
+          <%= link_to "Cancel", barangay_path(@barangay), class: "flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center" %>
         </div>
       <% end %>
-    </div>
-
-    <!-- Available Barangays Info -->
-    <div class="mt-6 bg-gray-50 rounded-lg p-4">
-      <h4 class="font-semibold text-gray-900 mb-2">📋 Barangays Without Captains: <%= @available_barangays.count %></h4>
-      <div class="text-sm text-gray-600">
-        <% if @available_barangays.count <= 5 %>
-          <%= @available_barangays.pluck(:name).join(", ") %>
-        <% else %>
-          <%= @available_barangays.first(5).pluck(:name).join(", ") %>, and <%= @available_barangays.count - 5 %> more...
-        <% end %>
-      </div>
-    </div>
-  <% end %>
+  </div>
 </div>
 

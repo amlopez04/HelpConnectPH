@@ -9,10 +9,10 @@
   <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
   <div class="flex gap-4">
     <%= link_to new_report_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition inline-flex items-center" do %>
-      <span class="mr-2">📝</span> Submit New Report
+      <span class="mr-2"></span> Submit New Report
     <% end %>
     <%= link_to reports_path, class: "bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition border-2 border-blue-600 inline-flex items-center" do %>
-      <span class="mr-2">📋</span> View All Reports
+      <span class="mr-2"></span> View All Reports
     <% end %>
   </div>
 </div>
@@ -42,10 +42,9 @@
         <div class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded">
           <h3 class="font-bold text-lg mb-2"><%= report.title %></h3>
           <div class="flex flex-wrap gap-2 text-sm mb-2">
-            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><%= report.category.name %></span>
-            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full"><%= report.barangay.name %></span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">🏷️ <%= report.category.name %></span>
+            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full">📍 <%= report.barangay.name %></span>
             <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full"><%= report.status.titleize %></span>
-            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full"><%= report.priority.titleize %></span>
           </div>
           <p class="text-gray-600 text-sm mb-3"><%= truncate(report.description, length: 100) %></p>
           <%= link_to "View Details →", report, class: "text-blue-600 hover:text-blue-800 font-semibold text-sm" %>
@@ -63,7 +62,7 @@
 <!-- Categories with Reports -->
 <div class="bg-white rounded-lg shadow-md p-6">
   <h2 class="text-2xl font-bold text-gray-900 mb-4">Report Categories</h2>
-  <% categories_with_reports = Category.all.select { |c| c.reports.count > 0 } %>
+  <% categories_with_reports = @categories.select { |c| c.reports.size > 0 } %>
   <% if categories_with_reports.any? %>
     <div class="grid md:grid-cols-3 gap-4">
       <% categories_with_reports.each do |category| %>
@@ -71,7 +70,7 @@
           <h3 class="font-bold text-lg mb-2"><%= category.name %></h3>
           <p class="text-gray-600 text-sm mb-3"><%= truncate(category.description, length: 80) %></p>
           <div class="text-sm text-gray-500">
-            <%= pluralize(category.reports.count, 'report') %> in this category
+            <%= pluralize(category.reports.size, 'report') %> in this category
           </div>
           <%= link_to "View Reports →", reports_path(category_id: category.id), class: "text-blue-600 hover:text-blue-800 font-semibold text-sm mt-2 inline-block" %>
         </div>
