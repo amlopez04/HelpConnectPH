@@ -34,9 +34,9 @@ class Admin::BarangayCaptainsController < ApplicationController
     generated_password = ApplicationHelper.generate_secure_password
 
     @user = User.new(
-      email: params[:user][:email],
+      email: barangay_captain_params[:email],
       role: :barangay_official,
-      barangay_id: params[:user][:barangay_id]
+      barangay_id: barangay_captain_params[:barangay_id]
     )
 
     # Set password explicitly
@@ -70,5 +70,11 @@ class Admin::BarangayCaptainsController < ApplicationController
       @available_barangays = Barangay.where.not(id: barangays_with_captains).order(:name)
       render :new, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def barangay_captain_params
+    params.require(:user).permit(:email, :barangay_id)
   end
 end

@@ -17,14 +17,44 @@ export default class extends Controller {
   }
 
   connect() {
-    // Wait for Google Maps API to load
-    if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-      console.error('Google Maps API not loaded')
-      this.mapTarget.innerHTML = '<div class="p-4 bg-red-50 text-red-600 rounded">Error: Google Maps API not loaded. Please check your API key.</div>'
+    // Show loading message while waiting for API
+    this.mapTarget.innerHTML = '<div class="p-4 bg-blue-50 text-blue-600 rounded">Loading Google Maps...</div>'
+    
+    // Check if Google Maps is already loaded
+    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+      this.initializeMap()
       return
     }
     
-    this.initializeMap()
+    // Listen for Google Maps loaded event (from callback)
+    window.addEventListener('google-maps-loaded', () => {
+      this.initializeMap()
+    }, { once: true })
+    
+    // Fallback: wait with retry mechanism (in case event doesn't fire)
+    this.waitForGoogleMaps()
+  }
+
+  waitForGoogleMaps(maxAttempts = 50, attempt = 0) {
+    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+      // API is loaded, initialize map (if not already initialized)
+      if (!this.map) {
+        this.initializeMap()
+      }
+      return
+    }
+
+    if (attempt >= maxAttempts) {
+      // API failed to load after 5 seconds (50 attempts * 100ms)
+      console.error('Google Maps API not loaded after waiting')
+      this.mapTarget.innerHTML = '<div class="p-4 bg-red-50 text-red-600 rounded">Error: Google Maps API not loaded. Please check your API key and ensure it\'s set correctly in environment variables.</div>'
+      return
+    }
+
+    // Retry after 100ms
+    setTimeout(() => {
+      this.waitForGoogleMaps(maxAttempts, attempt + 1)
+    }, 100)
   }
 
   // Haversine distance in meters

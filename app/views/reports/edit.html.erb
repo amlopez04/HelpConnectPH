@@ -1,5 +1,18 @@
 <% content_for :google_maps_script do %>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places&callback=Function.prototype" async defer></script>
+  <% if ENV['GOOGLE_MAPS_API_KEY'].present? %>
+    <script>
+      // Initialize Google Maps callback
+      window.initGoogleMaps = function() {
+        // Trigger a custom event when Google Maps is loaded
+        window.dispatchEvent(new Event('google-maps-loaded'));
+      };
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places&callback=initGoogleMaps" async defer></script>
+  <% else %>
+    <script>
+      console.error('GOOGLE_MAPS_API_KEY is not set in environment variables')
+    </script>
+  <% end %>
 <% end %>
 
 <div class="max-w-4xl mx-auto">
