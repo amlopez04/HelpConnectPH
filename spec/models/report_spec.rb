@@ -89,6 +89,11 @@ RSpec.describe Report, type: :model do
       expect(report.closed?).to be true
     end
 
+    it "can be reopen_requested" do
+      report = create(:report, status: :reopen_requested)
+      expect(report.reopen_requested?).to be true
+    end
+
     it "can change status" do
       report = create(:report)
       expect(report.pending_approval?).to be true

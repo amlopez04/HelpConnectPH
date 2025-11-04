@@ -9,7 +9,7 @@ RSpec.configure do |config|
       {
         'latitude' => 14.4793095,
         'longitude' => 121.0198229,
-        'address' => 'Parañaque, PH',
+        'address' => 'Parañaque, Metro Manila, Philippines',
         'city' => 'Parañaque',
         'state' => 'Metro Manila',
         'country' => 'Philippines'

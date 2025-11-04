@@ -2,9 +2,10 @@ FactoryBot.define do
   factory :report do
     title { Faker::Lorem.sentence(word_count: 5) }
     description { Faker::Lorem.paragraph(sentence_count: 3) }
-    address { Faker::Address.full_address }
-    latitude { Faker::Address.latitude }
-    longitude { Faker::Address.longitude }
+    address { "Parañaque, Metro Manila, Philippines" }
+    # Use Parañaque City coordinates that pass validation
+    latitude { 14.4793095 }
+    longitude { 121.0198229 }
     status { :pending_approval }
     priority { :medium }
 
@@ -31,6 +32,10 @@ FactoryBot.define do
 
     trait :closed do
       status { :closed }
+    end
+
+    trait :reopen_requested do
+      status { :reopen_requested }
     end
 
     trait :low_priority do
