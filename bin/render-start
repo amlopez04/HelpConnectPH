@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Render startup script that runs migrations and seeds before starting the server
+# This script is safe to run multiple times (idempotent)
+
+echo "🚀 Starting ParañaqueConnect deployment..."
+
+# Wait for database to be ready (max 30 seconds)
+echo "⏳ Waiting for database connection..."
+MAX_WAIT=30
+WAIT_COUNT=0
+until rails runner "ActiveRecord::Base.connection.execute('SELECT 1')" > /dev/null 2>&1; do
+  if [ $WAIT_COUNT -ge $MAX_WAIT ]; then
+    echo "⚠️  Database connection timeout after ${MAX_WAIT}s, continuing anyway..."
+    break
+  fi
+  echo "   Database not ready yet, waiting... ($WAIT_COUNT/${MAX_WAIT}s)"
+  sleep 2
+  WAIT_COUNT=$((WAIT_COUNT + 2))
+done
+
+if rails runner "ActiveRecord::Base.connection.execute('SELECT 1')" > /dev/null 2>&1; then
+  echo "✅ Database connected"
+  
+  # Run migrations
+  echo "📦 Running database migrations..."
+  if rails db:migrate; then
+    echo "✅ Migrations completed"
+  else
+    echo "⚠️  Migration failed, but continuing..."
+  fi
+  
+  # Run seeds (only if RUN_SEEDS=true)
+  if [ "$RUN_SEEDS" = "true" ]; then
+    echo "🌱 Running database seeds..."
+    if rails db:seed; then
+      echo "✅ Seeds completed"
+    else
+      echo "⚠️  Seeding failed, but continuing..."
+    fi
+  else
+    echo "ℹ️  Skipping seeds (set RUN_SEEDS=true to run seeds)"
+  fi
+else
+  echo "⚠️  Could not connect to database. Migrations/seeds will be skipped."
+  echo "⚠️  Server will start anyway, but database operations may fail."
+fi
+
+# Start the server
+echo "🚀 Starting Puma server..."
+exec bundle exec puma -C config/puma.rb
+
