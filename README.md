@@ -69,62 +69,7 @@ Visit `http://localhost:3000`
 - **Image Processing:** Image Processing gem
 - **Geocoding:** Geocoder gem
 
-## 🌐 Deployment
-
-### Coolify Deployment
-
-**Coolify** is a self-hosted platform-as-a-service that uses Docker containers for deployment.
-
-1. **Install Coolify** (if self-hosting)
-   - Follow [Coolify documentation](https://coolify.io/docs)
-   - Or use Coolify Cloud at [coolify.io](https://coolify.io)
-
-2. **Create New Project**
-   - Click "New Project" in Coolify dashboard
-   - Connect your Git repository (GitHub/GitLab)
-   - Select your parañaqueconnect repository
-
-3. **Configure Application**
-   - **Service Type:** Web Application
-   - **Build Pack:** Docker
-   - **Dockerfile:** Auto-detected (uses existing `Dockerfile`)
-   - **Port:** 80 (or 3000 if using Puma directly)
-
-4. **Add Environment Variables**
-   ```bash
-   # Required
-   RAILS_ENV=production
-   RAILS_MASTER_KEY=<value from config/master.key>
-   SECRET_KEY_BASE=<generate with 'rails secret'>
-   
-   # Email (Resend)
-   RESEND_API_KEY=<your-resend-api-key>
-   MAILER_HOST=<your-domain.com>
-   
-   # Google Maps
-   GOOGLE_MAPS_API_KEY=<your-google-maps-key>
-   
-   # Database
-   DATABASE_URL=postgresql://user:password@host:5432/dbname
-   
-   # Optional
-   PORT=3000
-   ```
-
-5. **Database Setup**
-   - Add PostgreSQL service in Coolify
-   - Or use external PostgreSQL database
-   - Set `DATABASE_URL` environment variable
-   - Run migrations on first deploy
-
-6. **Deploy and Test**
-   - Click "Deploy"
-   - Wait for build to complete (5-10 mins)
-   - Run migrations via Coolify shell: `rails db:migrate`
-   - Run seeds if needed: `rails db:seed`
-   - Visit your app at your configured domain
-
-### Alternative: Render Deployment
+Render Deployment
 
 1. **Create a Render Account** at [render.com](https://render.com)
 
@@ -267,7 +212,7 @@ GOOGLE_MAPS_API_KEY=<your-google-maps-key>
 
 ## 📝 License
 
-This project is part of a university course project.
+This project is part of a bootcamp project.
 
 ## 👨‍💻 Author
 
