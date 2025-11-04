@@ -23,5 +23,9 @@ module ParanaqueConnect
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Set Active Storage service default (can be overridden in environment files)
+    # This ensures Active Storage is configured before models load during seeding
+    config.active_storage.service = :local
   end
 end

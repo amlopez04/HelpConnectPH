@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :barangay do
-    name { Faker::Address.community }
+    sequence(:name) { |n| "Barangay #{n}" }
     description { Faker::Lorem.paragraph }
     address { "Parañaque, Metro Manila, Philippines" }
     # Use Parañaque City coordinates
