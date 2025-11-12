@@ -14,8 +14,8 @@ A community reporting system for Parañaque City barangays built with Rails 8 an
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/help_connect_ph.git
-cd help_connect_ph
+git clone https://github.com/yourusername/paranaque_connect_ph.git
+cd paranaque_connect_ph
 
 # Install dependencies
 bundle install
