@@ -91,6 +91,6 @@ group :test do
   gem "selenium-webdriver"
 
   # Test helpers
-  gem "shoulda-matchers", "~> 6.0"  # Simplifies testing Rails functionality
+  gem "shoulda-matchers", "~> 7.0"  # Simplifies testing Rails functionality
   gem "database_cleaner-active_record"  # Clean database between tests
 end
